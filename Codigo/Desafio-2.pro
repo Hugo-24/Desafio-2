@@ -2,9 +2,9 @@ TEMPLATE = app
 CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
-# Incluir la carpeta donde están los headers (.h)
+# Incluir headers desde la carpeta .h
 INCLUDEPATH += .h
-# Archivos fuente (.cpp)
+# Archivos fuente del sistema
 SOURCES += \
     .cpp/Fecha.cpp \
     .cpp/Reserva.cpp \
@@ -13,7 +13,7 @@ SOURCES += \
     .cpp/Alojamiento.cpp \
     .cpp/UdeAStay.cpp \
     main.cpp
-# Archivos de cabecera (.h)
+# Archivos de cabecera
 HEADERS += \
     .h/Fecha.h \
     .h/Reserva.h \
