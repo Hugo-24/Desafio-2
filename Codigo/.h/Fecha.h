@@ -8,6 +8,10 @@ private:
     int mes;   // Mes del año (1 a 12)
     int anio;  // Año (ej. 2025)
 
+    bool esValida(int d, int m, int a) const;
+    bool esBisiesto(int a) const;
+    void agregarDias(int dias);
+
 public:
     // Constructor por defecto: crea la fecha 01/01/2000
     Fecha();
@@ -45,6 +49,15 @@ public:
 
     // Operador menor que: determina si una fecha es anterior a otra
     bool operator<(const Fecha& otra) const;
+
+    //operadores para verificar rango
+    bool operator<=(const Fecha& otra) const;
+    bool operator>=(const Fecha& otra) const;
+
+    Fecha operator+(int dias) const;
+    Fecha& operator=(const Fecha& otra);
+    bool esValida() const;
+
 };
 
 #endif
