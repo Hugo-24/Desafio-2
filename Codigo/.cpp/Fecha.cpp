@@ -28,16 +28,6 @@ Fecha::Fecha(const Fecha& otra) {
     anio = otra.anio;
 }
 
-// Operador de asignación
-Fecha& Fecha::operator=(const Fecha& otra) {
-    if (this != &otra) { // Evitamos autoasignación
-        dia = otra.dia;
-        mes = otra.mes;
-        anio = otra.anio;
-    }
-    return *this;
-}
-
 // Destructor (no hay memoria dinámica interna)
 Fecha::~Fecha() { }
 
