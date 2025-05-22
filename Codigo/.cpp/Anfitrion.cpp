@@ -1,25 +1,61 @@
 #include "Anfitrion.h"
 #include "Alojamiento.h"
 #include <iostream>
-#include <cstring>
 
 using namespace std;
 
+// Inicialización de variables estáticas
+int Anfitrion::contadorAnfitriones = 0;
+int Anfitrion::totalAnfitrionesCreados = 0;
+int Anfitrion::totalIteracionesEnAlojamientos = 0;
+
+// Función auxiliar para calcular la longitud de un texto (como strlen)
+int Anfitrion::longitudTexto(const char* texto) const {
+    int len = 0;
+    while (texto[len] != '\0') {
+        len++;
+    }
+    return len;
+}
+
+// Función auxiliar para copiar texto de forma manual (sin usar strncpy)
+void Anfitrion::copiarTexto(char* destino, const char* fuente) const {
+    int i = 0;
+    while (fuente[i] != '\0') {
+        destino[i] = fuente[i];
+        i++;
+    }
+    destino[i] = '\0';
+}
+
 // Copia segura de texto dinámico
 char* Anfitrion::copiarTexto(const char* texto) const {
-    size_t longitud = strlen(texto);
+    int longitud = longitudTexto(texto);
     char* copia = new char[longitud + 1];
-    strncpy(copia, texto, longitud);
-    copia[longitud] = '\0';
+    copiarTexto(copia, texto);
     return copia;
 }
 
-// Constructor principal
-Anfitrion::Anfitrion(const char* documento, const char* nombre, int antiguedad) {
-    documentoIdentidad = copiarTexto(documento);
-    nombreCompleto = copiarTexto(nombre);
+// Constructor principal (genera código tipo ANF001 automáticamente)
+Anfitrion::Anfitrion(const char* nombre, int antiguedad) {
     antiguedadEnMeses = antiguedad;
-    puntuacion = 5.0f; // Valor inicial por defecto. El sufijo 'f' fuerza el literal como float (no double)
+    puntuacion = 5.0f; // Valor inicial por defecto
+
+    // Generar documento/código automáticamente
+    contadorAnfitriones++;
+    totalAnfitrionesCreados++;
+
+    char codigoGenerado[10];
+    codigoGenerado[0] = 'A';
+    codigoGenerado[1] = 'N';
+    codigoGenerado[2] = 'F';
+    codigoGenerado[3] = (contadorAnfitriones / 100) % 10 + '0';
+    codigoGenerado[4] = (contadorAnfitriones / 10) % 10 + '0';
+    codigoGenerado[5] = contadorAnfitriones % 10 + '0';
+    codigoGenerado[6] = '\0';
+
+    documentoIdentidad = copiarTexto(codigoGenerado);
+    nombreCompleto = copiarTexto(nombre);
 
     capacidadAlojamientos = 5;
     cantidadAlojamientos = 0;
@@ -38,8 +74,10 @@ Anfitrion::Anfitrion(const Anfitrion& otro) {
     listaAlojamientos = new Alojamiento*[capacidadAlojamientos];
 
     for (int i = 0; i < cantidadAlojamientos; i++) {
-        listaAlojamientos[i] = otro.listaAlojamientos[i]; // Copia superficial (solo puntero)
+        listaAlojamientos[i] = otro.listaAlojamientos[i]; // Copia superficial
     }
+
+    totalAnfitrionesCreados++;
 }
 
 // Destructor
@@ -80,7 +118,9 @@ void Anfitrion::setPuntuacion(float nuevaPuntuacion) {
     puntuacion = nuevaPuntuacion;
 }
 
-// Si se llena el arreglo, lo duplicamos
+// Esta función duplica el tamaño del arreglo de alojamientos cuando ya no hay más espacio.
+// Es necesaria porque usamos arreglos dinámicos sin STL, así que debemos manejar manualmente
+// el crecimiento de la estructura para seguir agregando alojamientos sin perder los anteriores.
 void Anfitrion::redimensionarAlojamientos() {
     int nuevaCapacidad = capacidadAlojamientos * 2;
     Alojamiento** nuevoArreglo = new Alojamiento*[nuevaCapacidad];
@@ -105,13 +145,24 @@ void Anfitrion::agregarAlojamiento(Alojamiento* alojamiento) {
 // Ver reservas en un rango
 void Anfitrion::verReservaciones(const Fecha& desde, const Fecha& hasta) const {
     for (int i = 0; i < cantidadAlojamientos; i++) {
-        listaAlojamientos[i]->mostrarReservasEnRango(desde, hasta);// '->' se usa para acceder a métodos desde un puntero
+        totalIteracionesEnAlojamientos++;
+        listaAlojamientos[i]->mostrarReservasEnRango(desde, hasta);
     }
 }
 
 // Anular reserva en todos sus alojamientos
 void Anfitrion::anularReservacion(const char* codigoReserva) {
     for (int i = 0; i < cantidadAlojamientos; i++) {
+        totalIteracionesEnAlojamientos++;
         listaAlojamientos[i]->eliminarReservacion(codigoReserva);
     }
+}
+
+// Reporte de uso de recursos
+int Anfitrion::getTotalAnfitrionesCreados() {
+    return totalAnfitrionesCreados;
+}
+
+int Anfitrion::getTotalIteraciones() {
+    return totalIteracionesEnAlojamientos;
 }
