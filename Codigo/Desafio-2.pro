@@ -13,7 +13,6 @@ SOURCES += \
     .cpp/Alojamiento.cpp \
     .cpp/UdeAStay.cpp \
     main.cpp \
-    pruebas/Pruebas-Reservasinhuesped.cpp
 # Archivos de cabecera
 HEADERS += \
     .h/Fecha.h \
