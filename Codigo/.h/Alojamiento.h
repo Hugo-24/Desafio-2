@@ -7,45 +7,52 @@ class Anfitrion;
 // Esta clase representa un alojamiento ofrecido por un anfitrión.
 // Contiene la información necesaria para identificarlo, calcular disponibilidad,
 // gestionar reservas, mostrar amenidades, y saber quién es su dueño.
+// Usamos memoria dinámica para todo (sin STL) y agregamos contadores para análisis de recursos.
 class Alojamiento {
 private:
     // Datos básicos del alojamiento
-    char* codigo;         // Código único del alojamiento
-    char* nombre;         // Nombre comercial (ej. "Casa en el lago")
-    char* departamento;   // Departamento donde se encuentra
-    char* municipio;      // Municipio
-    char* direccion;      // Dirección específica
-    int tipoAlojamiento;  // 0 = casa, 1 = apartamento
+    char* codigo;
+    char* nombre;
+    char* departamento;
+    char* municipio;
+    char* direccion;
+    int tipoAlojamiento;       // 0 = casa, 1 = apartamento
     double precioPorNoche;
 
-    // Amenidades como bits (ej. 1 = wifi, 2 = piscina, etc.)
+    // Amenidades usando bits (bitmask)
     int amenidades;
 
     // Listas dinámicas de reservas
-    Fecha* fechasInicioReservadas;  // Arreglo de fechas de entrada
-    int* duracionesReservadas;      // Duraciones de cada reserva en noches
-    int cantidadReservaciones;      // Cuántas reservas hay actualmente
-    int capacidadReservaciones;     // Capacidad máxima antes de redimensionar
+    Fecha* fechasInicioReservadas;
+    int* duracionesReservadas;
+    int cantidadReservaciones;
+    int capacidadReservaciones;
 
-    // Dueño del alojamiento (apunta al anfitrión)
+    // Dueño del alojamiento
     Anfitrion* dueno;
 
-    // Métodos internos útiles
-    char* copiarTexto(const char* texto) const; // Copia segura de texto dinámico
-    void redimensionarReservas();               // Duplica la capacidad si se llena el arreglo
+    // Métodos internos
+    char* copiarTexto(const char* texto) const;
+    int longitudTexto(const char* texto) const;
+    void copiarTextoManual(char* destino, const char* fuente) const;
+    void redimensionarReservas();  // Duplica capacidad si se llena el arreglo
+
+    // Contadores estáticos para análisis de recursos
+    static int totalAlojamientosCreados;
+    static int totalIteracionesEnReservas;
 
 public:
-    // Constructor principal para crear el alojamiento desde cero
+    // Constructor principal
     Alojamiento(const char* cod, const char* nom, const char* dep, const char* mun,
                 const char* dir, int tipo, double precio, Anfitrion* dueno);
 
-    // Constructor de copia (por si hay que duplicar uno existente)
+    // Constructor de copia
     Alojamiento(const Alojamiento& otro);
 
-    // Destructor (libera toda la memoria dinámica)
+    // Destructor
     ~Alojamiento();
 
-    // Métodos para consultar los datos del alojamiento
+    // Getters básicos
     char* getCodigo() const;
     char* getNombre() const;
     char* getDepartamento() const;
@@ -55,26 +62,24 @@ public:
     double getPrecioPorNoche() const;
     int getAmenidades() const;
 
-    // Métodos para trabajar con amenidades específicas
+    // Métodos para amenidades
     bool tieneAmenidad(int amenidad) const;
     void agregarAmenidad(int amenidad);
     void quitarAmenidad(int amenidad);
     void mostrarAmenidades() const;
 
-    // Verifica si el alojamiento está libre en una fecha exacta
+    // Gestión de reservas
     bool estaDisponible(const Fecha& inicio) const;
-
-    // Registra una nueva reserva con fecha y duración
     void agregarReservacion(const Fecha& inicio, int duracion);
-
-    // Elimina una reserva (a futuro, por ahora es simulado)
-    void eliminarReservacion(const char* codigoReserva);
-
-    // Muestra todas las reservas que estén entre dos fechas
+    void eliminarReservacion(const char* codigoReserva); // Simulado
     void mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const;
 
-    // Devuelve el puntero al anfitrión que es dueño de este alojamiento
+    // Dueño del alojamiento
     Anfitrion* getAnfitrionResponsable() const;
+
+    // Acceso a los contadores de recursos
+    static int getTotalAlojamientosCreados();
+    static int getTotalIteraciones();
 };
 
 #endif // ALOJAMIENTO_H

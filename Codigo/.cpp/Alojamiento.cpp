@@ -1,20 +1,41 @@
 #include "Alojamiento.h"
 #include "Anfitrion.h"
 #include <iostream>
-#include <cstring>
 
 using namespace std;
 
-// Copia segura de texto dinámico
+// Inicialización de contadores
+int Alojamiento::totalAlojamientosCreados = 0;
+int Alojamiento::totalIteracionesEnReservas = 0;
+
+// Función para calcular la longitud de un texto sin usar <cstring>
+int Alojamiento::longitudTexto(const char* texto) const {
+    int i = 0;
+    while (texto[i] != '\0') {
+        i++;
+    }
+    return i;
+}
+
+// Copia manual de texto (como strcpy pero hecho a mano)
+void Alojamiento::copiarTextoManual(char* destino, const char* fuente) const {
+    int i = 0;
+    while (fuente[i] != '\0') {
+        destino[i] = fuente[i];
+        i++;
+    }
+    destino[i] = '\0';
+}
+
+// Crea una nueva copia dinámica de un texto
 char* Alojamiento::copiarTexto(const char* texto) const {
-    size_t longitud = strlen(texto);
+    int longitud = longitudTexto(texto);
     char* copia = new char[longitud + 1];
-    strncpy(copia, texto, longitud);
-    copia[longitud] = '\0';
+    copiarTextoManual(copia, texto);
     return copia;
 }
 
-// Redimensiona los arreglos si se llenan
+// Duplica el tamaño de los arreglos de reservas si se llenan
 void Alojamiento::redimensionarReservas() {
     int nuevaCapacidad = capacidadReservaciones * 2;
     Fecha* nuevasFechas = new Fecha[nuevaCapacidad];
@@ -27,6 +48,7 @@ void Alojamiento::redimensionarReservas() {
 
     delete[] fechasInicioReservadas;
     delete[] duracionesReservadas;
+
     fechasInicioReservadas = nuevasFechas;
     duracionesReservadas = nuevasDuraciones;
     capacidadReservaciones = nuevaCapacidad;
@@ -50,6 +72,8 @@ Alojamiento::Alojamiento(const char* cod, const char* nom, const char* dep, cons
     cantidadReservaciones = 0;
     fechasInicioReservadas = new Fecha[capacidadReservaciones];
     duracionesReservadas = new int[capacidadReservaciones];
+
+    totalAlojamientosCreados++;
 }
 
 // Constructor de copia
@@ -75,6 +99,8 @@ Alojamiento::Alojamiento(const Alojamiento& otro) {
         fechasInicioReservadas[i] = otro.fechasInicioReservadas[i];
         duracionesReservadas[i] = otro.duracionesReservadas[i];
     }
+
+    totalAlojamientosCreados++;
 }
 
 // Destructor
@@ -98,7 +124,7 @@ int Alojamiento::getTipoAlojamiento() const { return tipoAlojamiento; }
 double Alojamiento::getPrecioPorNoche() const { return precioPorNoche; }
 int Alojamiento::getAmenidades() const { return amenidades; }
 
-// Amenidades como bits
+// Amenidades (bitmask)
 bool Alojamiento::tieneAmenidad(int amenidad) const {
     return (amenidades & (1 << amenidad)) != 0;
 }
@@ -119,9 +145,10 @@ void Alojamiento::mostrarAmenidades() const {
     if (tieneAmenidad(3)) cout << "- Cocina\n";
 }
 
-// Disponibilidad: no hay reservas en esa fecha exacta
+// Verifica si hay una reserva con esa fecha exacta
 bool Alojamiento::estaDisponible(const Fecha& inicio) const {
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         if (inicio == fechasInicioReservadas[i]) return false;
     }
     return true;
@@ -137,7 +164,7 @@ void Alojamiento::agregarReservacion(const Fecha& inicio, int duracion) {
     cantidadReservaciones++;
 }
 
-// Simular eliminación
+// Eliminar reserva (simulado)
 void Alojamiento::eliminarReservacion(const char* codigoReserva) {
     cout << "Reserva con codigo " << codigoReserva << " eliminada del alojamiento " << nombre << " (simulado).\n";
 }
@@ -150,6 +177,7 @@ void Alojamiento::mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta)
     cout << hasta.getDia() << "/" << hasta.getMes() << "/" << hasta.getAnio() << ":\n";
 
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         const Fecha& entrada = fechasInicioReservadas[i];
         if (!(entrada < desde) && !(hasta < entrada)) {
             char* str = entrada.toString();
@@ -159,7 +187,16 @@ void Alojamiento::mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta)
     }
 }
 
-// Obtener dueño
+// Devolver puntero al anfitrión dueño
 Anfitrion* Alojamiento::getAnfitrionResponsable() const {
     return dueno;
+}
+
+// Getters de los contadores
+int Alojamiento::getTotalAlojamientosCreados() {
+    return totalAlojamientosCreados;
+}
+
+int Alojamiento::getTotalIteraciones() {
+    return totalIteracionesEnReservas;
 }

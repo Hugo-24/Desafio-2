@@ -55,6 +55,7 @@ public:
     bool operator>=(const Fecha& otra) const;
 
     Fecha operator+(int dias) const;
+    Fecha& operator=(const Fecha& otra);
     bool esValida() const;
 
 };

@@ -3,30 +3,42 @@
 
 #include "Fecha.h"
 class Alojamiento;  // Solo usamos puntero
-
 // Esta clase representa a un anfitrión dentro del sistema.
-// Cada anfitrión tiene un documento, nombre, puntuación y aloja alojamientos (valga la redundancia).
+// Cada anfitrión tiene un documento/código único que ahora se genera internamente.
+// Usamos 'static' para que el contador sea compartido entre todos los objetos de la clase,
+// Usamos 'const' para asegurar que ciertas funciones (como copiar texto o getters)
+// no modifiquen el estado del objeto y sean más seguras y predecibles.
 class Anfitrion {
 private:
     char* documentoIdentidad;         // ID único del anfitrión
     char* nombreCompleto;             // Su nombre completo
     int antiguedadEnMeses;            // Cuánto lleva en la plataforma
     float puntuacion;                 // Su calificación
-
     // Como puede tener varios alojamientos, usamos un arreglo dinámico de punteros
     Alojamiento** listaAlojamientos;
     int cantidadAlojamientos;
     int capacidadAlojamientos;
 
-    // Cosas internas para copiar texto y aumentar tamaño si se llena el arreglo
+    // Cosas internas para manejo seguro
     char* copiarTexto(const char* texto) const;
-    void redimensionarAlojamientos();
+    void redimensionarAlojamientos();// Esta función duplica el tamaño del arreglo de alojamientos cuando ya no hay más espacio.
+
+    // Funciones auxiliares
+    int longitudTexto(const char* texto) const;
+    void copiarTexto(char* destino, const char* fuente) const;
+
+    // Contador estático para generar códigos únicos tipo "ANF001"
+    static int contadorAnfitriones;
+
+    // Contadores de recursos
+    static int totalAnfitrionesCreados;
+    static int totalIteracionesEnAlojamientos;
 
 public:
-    // Constructor principal
-    Anfitrion(const char* documento, const char* nombre, int antiguedad);
+    // Constructor principal (ahora genera código automáticamente)
+    Anfitrion(const char* nombre, int antiguedad);
 
-    // Para copiar anfitriones si toca (aunque no lo usamos mucho, por si acaso)
+    // Constructor de copia
     Anfitrion(const Anfitrion& otro);
 
     // Destructor (liberamos memoria dinámica)
@@ -51,6 +63,10 @@ public:
 
     // Le pide a sus alojamientos que anulen alguna reserva
     void anularReservacion(const char* codigoReserva);
+
+    // Métodos para reportar uso de recursos
+    static int getTotalAnfitrionesCreados();
+    static int getTotalIteraciones();
 };
 
 #endif // ANFITRION_H
