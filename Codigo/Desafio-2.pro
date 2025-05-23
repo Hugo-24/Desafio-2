@@ -12,7 +12,7 @@ SOURCES += \
     .cpp/Anfitrion.cpp \
     .cpp/Alojamiento.cpp \
     .cpp/UdeAStay.cpp \
-    main.cpp \
+    main.cpp
 # Archivos de cabecera
 HEADERS += \
     .h/Fecha.h \
