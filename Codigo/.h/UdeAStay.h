@@ -11,19 +11,20 @@ class UdeAStay {
 private:
     // Listas principales
     Anfitrion** listaAnfitriones;
-    Huesped** listaHuespedes;
+    Huesped**   listaHuespedes;
     Alojamiento** listaAlojamientos;
-    Reserva** listaReservasVigentes;
-    Reserva** listaReservasHistoricas;
+    Reserva**   listaReservasVigentes;
+    Reserva**   listaReservasHistoricas;
 
-    // Fecha límite actual para reservas (1 año desde hoy)
-    Fecha fechaCorte;
+    // Fecha de la última ejecución y límite para histórico
+    Fecha fechaCorte;        // histórico hasta aquí
+    // (se inicializa leyendo lastdate.txt y actualiza al arrancar)
 
     // Cantidades y capacidades
     int cantidadAnfitriones, capacidadAnfitriones;
-    int cantidadHuespedes, capacidadHuespedes;
-    int cantidadAlojamientos, capacidadAlojamientos;
-    int cantidadReservasVigentes, capacidadReservasVigentes;
+    int cantidadHuespedes,   capacidadHuespedes;
+    int cantidadAlojamientos,capacidadAlojamientos;
+    int cantidadReservasVigentes,   capacidadReservasVigentes;
     int cantidadReservasHistoricas, capacidadReservasHistoricas;
 
     // Estadísticas de recursos
@@ -37,46 +38,55 @@ private:
     void redimensionarReservasVigentes();
     void redimensionarReservasHistoricas();
 
-    Huesped* buscarHuespedPorDocumento(const char* documento);
+    Huesped*   buscarHuespedPorDocumento(const char* documento);
     Anfitrion* buscarAnfitrionPorDocumento(const char* documento);
-    Alojamiento* buscarAlojamientoPorCodigo(const char* codigo);
+    Alojamiento*buscarAlojamientoPorCodigo(const char* codigo);
 
-    bool validarDisponibilidad(Alojamiento* a, Fecha inicio, int duracion);
+    bool validarDisponibilidad(Alojamiento* a, const Fecha& inicio, int duracion);
+
+    // Manejo de fecha persistente
+    Fecha leerFechaArchivo(const char* nombreArchivo);
+    void  guardarFechaArchivo(const char* nombreArchivo, const Fecha& fecha);
 
 public:
     // Constructor y destructor
     UdeAStay();
     ~UdeAStay();
 
-    // Funcionalidad I - Carga de datos
-    void cargarDatosDesdeArchivo();     // Carga todo desde txts
-    void guardarDatosEnArchivo();       // Guarda todas las entidades
+    // Funcionalidad I – Carga y guardado de datos
+    void cargarDatosDesdeArchivo();
+    void guardarDatosEnArchivo();
 
-    // Funcionalidad II - Iniciar sesión
+    // Funcionalidad II – Iniciar sesión (valida fecha y actualiza histórico)
     void iniciarSesion(const char* documentoIdentidad, int tipoUsuario);
 
-    // Funcionalidad III - Crear reserva
-    void crearReserva(const char* documentoHuesped, const char* codigoAlojamiento,
-                      Fecha fechaEntrada, int duracion, int metodoPago,
-                      const Fecha& fechaPago, double monto, const char* anotaciones);
+    // III – Crear reserva
+    void crearReserva(const char* documentoHuesped,
+                      const char* codigoAlojamiento,
+                      const Fecha& fechaEntrada,
+                      int duracion,
+                      int metodoPago,
+                      const Fecha& fechaPago,
+                      double monto,
+                      const char* anotaciones);
 
-    // Funcionalidad IV - Anular reserva
+    // IV – Anular reserva
     void anularReserva(const char* codigoReserva);
 
-    // Funcionalidad V - Consultar reservas por anfitrión
+    // V – Consultar reservas de anfitrión
     void consultarReservasAnfitrion(const char* documentoAnfitrion,
                                     const Fecha& desde,
                                     const Fecha& hasta);
 
-    // Funcionalidad VI - Actualizar histórico
+    // VI – Actualizar histórico manualmente
     void actualizarHistorico(const Fecha& nuevaFechaCorte);
 
-    // Funcionalidad VII - Estadísticas del sistema
+    // VII – Medir consumo de recursos
     void medirConsumoDeRecursos();
 
-    // Funcionalidades auxiliares (para lógica interna)
-    int buscarHuespedIndex(const char* documento);
-    int buscarAlojamientoIndex(const char* codigo);
+    // Auxiliares de búsqueda (para menús y pruebas)
+    int    buscarHuespedIndex(const char* documento);
+    int    buscarAlojamientoIndex(const char* codigo);
     Reserva* buscarReserva(const char* codigo);
 };
 
