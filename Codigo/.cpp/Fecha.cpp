@@ -85,6 +85,12 @@ bool Fecha::operator<(const Fecha& otra) const {
     if (mes != otra.mes) return mes < otra.mes;
     return dia < otra.dia;
 }
+// Comparación mayor que
+bool Fecha::operator>(const Fecha& otra) const {
+    if (anio != otra.anio) return anio > otra.anio;
+    if (mes != otra.mes) return mes > otra.mes;
+    return dia > otra.dia;
+}
 bool Fecha::operator<=(const Fecha& otra) const {
     return (*this < otra) || (*this == otra);
 }

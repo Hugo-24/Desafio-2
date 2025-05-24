@@ -46,6 +46,8 @@ public:
 
     // Operador menor que: determina si una fecha es anterior a otra
     bool operator<(const Fecha& otra) const;
+    // Operador mayor que: determina si una fecha es posterior a otra
+    bool operator>(const Fecha& otra) const;
 
     //operadores para verificar rango
     bool operator<=(const Fecha& otra) const;
