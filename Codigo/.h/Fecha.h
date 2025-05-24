@@ -22,9 +22,6 @@ public:
     // Constructor de copia: crea una nueva instancia a partir de otra Fecha
     Fecha(const Fecha& otra);
 
-    // Operador de asignación: permite hacer f1 = f2 correctamente
-    Fecha& operator=(const Fecha& otra);
-
     // Destructor: no gestiona memoria dinámica, pero se define por buenas prácticas
     ~Fecha();
 

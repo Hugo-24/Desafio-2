@@ -3,6 +3,8 @@
 
 #include "Fecha.h"
 class Anfitrion;
+class Reserva;
+
 
 // Esta clase representa un alojamiento ofrecido por un anfitrión.
 // Contiene la información necesaria para identificarlo, calcular disponibilidad,
@@ -25,6 +27,7 @@ private:
     // Listas dinámicas de reservas
     Fecha* fechasInicioReservadas;
     int* duracionesReservadas;
+    Reserva** reservasPtr;
     int cantidadReservaciones;
     int capacidadReservaciones;
 
@@ -70,8 +73,8 @@ public:
 
     // Gestión de reservas
     bool estaDisponible(const Fecha& inicio) const;
-    void agregarReservacion(const Fecha& inicio, int duracion);
-    void eliminarReservacion(const char* codigoReserva); // Simulado
+    void agregarReservacion(const Fecha& inicio, int duracion, Reserva* r);
+    void eliminarReservacion(const char* codigoReserva); // Real
     void mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const;
 
     // Dueño del alojamiento

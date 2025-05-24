@@ -97,21 +97,24 @@ Huesped& Huesped::operator=(const Huesped& otro) {
 
 // Agrega una reserva al arreglo (sin dueño de memoria)
 void Huesped::agregarReserva(Reserva* reserva) {
+    // Validar que no haya conflicto de fechas
     Fecha newStart = reserva->getFechaEntrada();
-    Fecha newEnd = reserva->calcularFechaSalida();
+    Fecha newEnd   = reserva->calcularFechaSalida();
     for (int i = 0; i < cantidadReservas; i++) {
         Fecha exStart = listaReservas[i]->getFechaEntrada();
-        Fecha exEnd = listaReservas[i]->calcularFechaSalida();
+        Fecha exEnd   = listaReservas[i]->calcularFechaSalida();
         if (!(newEnd <= exStart || exEnd <= newStart)) {
             std::cout << "Error: Conflicto de fechas con reservacion existente.\n";
             return;
         }
     }
+    // Redimensionar si es necesario
     if (cantidadReservas == capacidadReservas) {
         redimensionarReservas();
     }
     listaReservas[cantidadReservas++] = reserva;
 }
+
 
 // Imprime resumen (nombre, documento, cantidad de reservas)
 void Huesped::imprimirResumen() const {
@@ -124,16 +127,17 @@ void Huesped::imprimirResumen() const {
 void Huesped::anularReservacion(const char* codigoReserva) {
     for (int i = 0; i < cantidadReservas; i++) {
         if (std::strcmp(listaReservas[i]->getCodigo(), codigoReserva) == 0) {
+            // Primero notificar al alojamiento
             Alojamiento* aloj = listaReservas[i]->getAlojamiento();
             if (aloj) {
                 aloj->eliminarReservacion(codigoReserva);
             }
-            delete listaReservas[i];
+            // Compactar el arreglo
             for (int j = i; j < cantidadReservas - 1; j++) {
-                listaReservas[j] = listaReservas[j + 1];
+                listaReservas[j] = listaReservas[j+1];
             }
             cantidadReservas--;
-            std::cout << "Reservacion con codigo " << codigoReserva << " anulada.\n";
+            std::cout << "Reservacion con codigo " << codigoReserva << " anulada en Huesped.\n";
             return;
         }
     }

@@ -6,7 +6,6 @@ CONFIG -= qt
 INCLUDEPATH += .h
 # Archivos fuente del sistema
 SOURCES += \
-    pruebas/Pruebas-Reserva.cpp \
     .cpp/Fecha.cpp \
     .cpp/Reserva.cpp \
     .cpp/Huesped.cpp \
@@ -21,4 +20,4 @@ HEADERS += \
     .h/Huesped.h \
     .h/Anfitrion.h \
     .h/Alojamiento.h \
-    .h/UdeAStay.h
+    .h/UdeAStay.h \

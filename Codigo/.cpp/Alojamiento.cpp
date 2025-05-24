@@ -1,6 +1,8 @@
 #include "Alojamiento.h"
 #include "Anfitrion.h"
+#include "Reserva.h"
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -40,19 +42,24 @@ void Alojamiento::redimensionarReservas() {
     int nuevaCapacidad = capacidadReservaciones * 2;
     Fecha* nuevasFechas = new Fecha[nuevaCapacidad];
     int* nuevasDuraciones = new int[nuevaCapacidad];
+    Reserva** nuevosPtr = new Reserva*[nuevaCapacidad];
 
     for (int i = 0; i < cantidadReservaciones; i++) {
-        nuevasFechas[i] = fechasInicioReservadas[i];
-        nuevasDuraciones[i] = duracionesReservadas[i];
+        nuevasFechas[i]    = fechasInicioReservadas[i];
+        nuevasDuraciones[i]= duracionesReservadas[i];
+        nuevosPtr[i]       = reservasPtr[i];
     }
 
     delete[] fechasInicioReservadas;
     delete[] duracionesReservadas;
+    delete[] reservasPtr;
 
     fechasInicioReservadas = nuevasFechas;
-    duracionesReservadas = nuevasDuraciones;
+    duracionesReservadas   = nuevasDuraciones;
+    reservasPtr            = nuevosPtr;
     capacidadReservaciones = nuevaCapacidad;
 }
+
 
 // Constructor principal
 Alojamiento::Alojamiento(const char* cod, const char* nom, const char* dep, const char* mun,
@@ -72,6 +79,7 @@ Alojamiento::Alojamiento(const char* cod, const char* nom, const char* dep, cons
     cantidadReservaciones = 0;
     fechasInicioReservadas = new Fecha[capacidadReservaciones];
     duracionesReservadas = new int[capacidadReservaciones];
+    reservasPtr = new Reserva*[capacidadReservaciones];
 
     totalAlojamientosCreados++;
 }
@@ -155,19 +163,33 @@ bool Alojamiento::estaDisponible(const Fecha& inicio) const {
 }
 
 // Agregar nueva reserva
-void Alojamiento::agregarReservacion(const Fecha& inicio, int duracion) {
+void Alojamiento::agregarReservacion(const Fecha& inicio, int duracion, Reserva* r) {
     if (cantidadReservaciones == capacidadReservaciones) {
         redimensionarReservas();
     }
     fechasInicioReservadas[cantidadReservaciones] = inicio;
-    duracionesReservadas[cantidadReservaciones] = duracion;
+    duracionesReservadas[cantidadReservaciones]   = duracion;
+    reservasPtr[cantidadReservaciones]            = r;   // almacena el puntero
     cantidadReservaciones++;
 }
 
-// Eliminar reserva (simulado)
+
+// Eliminar reserva (Ahora real)
 void Alojamiento::eliminarReservacion(const char* codigoReserva) {
-    cout << "Reserva con codigo " << codigoReserva << " eliminada del alojamiento " << nombre << " (simulado).\n";
+    for (int i = 0; i < cantidadReservaciones; i++) {
+        if (std::strcmp(reservasPtr[i]->getCodigo(), codigoReserva) == 0) {
+            // Opcional: delete reservasPtr[i]; // si Alojamiento es dueño
+            for (int j = i; j < cantidadReservaciones - 1; j++) {
+                fechasInicioReservadas[j] = fechasInicioReservadas[j+1];
+                duracionesReservadas[j]   = duracionesReservadas[j+1];
+                reservasPtr[j]            = reservasPtr[j+1];
+            }
+            cantidadReservaciones--;
+            return;
+        }
+    }
 }
+
 
 // Mostrar reservas en rango
 void Alojamiento::mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const {
