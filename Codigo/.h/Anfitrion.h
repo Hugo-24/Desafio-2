@@ -55,6 +55,10 @@ public:
     void setNombreCompleto(const char* nombre);
     void setPuntuacion(float puntuacion);
 
+    //Este método se usa exclusivamente para la carga desde archivos. No debe usarse en la lógica normal del sistema.
+    // Permite establecer manualmente el documento del anfitrión.
+    void setDocumentoIdentidad(const char* documento);
+
     // Agrega un alojamiento nuevo al arreglo
     void agregarAlojamiento(Alojamiento* alojamiento);
 

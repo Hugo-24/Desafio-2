@@ -115,6 +115,14 @@ void Anfitrion::setPuntuacion(float nuevaPuntuacion) {
     puntuacion = nuevaPuntuacion;
 }
 
+// Este método es necesario para cuando se carga un anfitrión
+// desde archivo y ya se conoce su documento real (por ejemplo, "11445566").
+// Libera el documento anterior generado automáticamente y lo reemplaza.
+void Anfitrion::setDocumentoIdentidad(const char* documento) {
+    delete[] documentoIdentidad;
+    documentoIdentidad = copiarTexto(documento);
+}
+
 // Esta función duplica el tamaño del arreglo de alojamientos cuando ya no hay más espacio.
 // Es necesaria porque usamos arreglos dinámicos sin STL, así que debemos manejar manualmente
 // el crecimiento de la estructura para seguir agregando alojamientos sin perder los anteriores.

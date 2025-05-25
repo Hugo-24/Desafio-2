@@ -1,1 +1,3 @@
 ALO-0001;Casa Bonita;Antioquia;Medellin;Cra 10 # 20-30;0;120000;11445566;wifi,piscina,patio
+ALO-0002;Apartamento Azul;Antioquia;Envigado;Calle 45 # 55-10;1;150000;22889977;wifi,aire,cocina
+ALO-0003;Finca El Descanso;Antioquia;Rionegro;Vereda Las Palmas;0;250000;11445566;piscina,patio,cocina
