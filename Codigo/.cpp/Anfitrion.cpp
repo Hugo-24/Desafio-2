@@ -1,8 +1,5 @@
 #include "Anfitrion.h"
 #include "Alojamiento.h"
-#include <iostream>
-
-using namespace std;
 
 // Inicialización de variables estáticas
 int Anfitrion::contadorAnfitriones = 0;

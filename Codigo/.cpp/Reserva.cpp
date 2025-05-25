@@ -1,164 +1,124 @@
 #include "Reserva.h"
-#include <cstring>
-#include <cstdio>
-#include <iostream>
+#include "Alojamiento.h"
+#include "Huesped.h"
 
-// Inicializar contador estático
+// Inicialización de contadores estáticos
 int Reserva::siguienteId = 1;
+int Reserva::totalReservasCreadas = 0;
+int Reserva::totalIteracionesEnReservas = 0;
 
-// Algoritmo para el día de la semana (Zeller)
-static int calcularDiaSemana(int d, int m, int y) {
-    if (m < 3) { m += 12; y -= 1; }
-    int K = y % 100;
-    int J = y / 100;
-    int q = d;
-    int h = (q + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
-    return h; // 0=sábado, 1=domingo, 2=lunes, ..., 6=viernes
+// Función auxiliar: calcula longitud de texto
+int Reserva::longitudTexto(const char* texto) const {
+    int i = 0;
+    while (texto[i] != '\0') {
+        i++;
+        totalIteracionesEnReservas++;
+    }
+    return i;
 }
 
-// Constructor automático: genera código internamente (RSV-0001, RSV-0002...)
-Reserva::Reserva(const Fecha& fechaEnt, int dur,
-                 Alojamiento* aloj, Huesped* huesp,
-                 const char* metPago, const Fecha& fechaPag,
-                 double mto, const char* anot) :
-    fechaEntrada(fechaEnt),
-    duracion(dur),
-    alojamiento(aloj),
-    huesped(huesp),
-    fechaPago(fechaPag),
-    monto(mto)
-{
-    // Generar código único
-    char buf[16];
-    std::snprintf(buf, sizeof(buf), "RSV-%04d", siguienteId++);
-    codigo = new char[std::strlen(buf) + 1];
-    std::strcpy(codigo, buf);
-
-    // Método de pago
-    if (metPago) {
-        metodoPago = new char[std::strlen(metPago) + 1];
-        std::strcpy(metodoPago, metPago);
-    } else {
-        metodoPago = nullptr;
+// Función auxiliar: copia de texto (como strcpy)
+void Reserva::copiarTexto(char* destino, const char* fuente) const {
+    int i = 0;
+    while (fuente[i] != '\0') {
+        destino[i] = fuente[i];
+        i++;
+        totalIteracionesEnReservas++;
     }
-
-    // Anotaciones
-    if (anot) {
-        anotaciones = new char[std::strlen(anot) + 1];
-        std::strcpy(anotaciones, anot);
-    } else {
-        anotaciones = nullptr;
-    }
+    destino[i] = '\0';
 }
 
-// Constructor completo (código manual)
-Reserva::Reserva(const char* cod, const Fecha& fechaEnt, int dur,
-                 Alojamiento* aloj, Huesped* huesp,
-                 const char* metPago, const Fecha& fechaPag,
-                 double mto, const char* anot) :
-    fechaEntrada(fechaEnt),
-    duracion(dur),
-    alojamiento(aloj),
-    huesped(huesp),
-    fechaPago(fechaPag),
-    monto(mto)
+// Función auxiliar: crea una copia nueva de texto
+char* Reserva::copiarTexto(const char* fuente) const {
+    if (!fuente) return nullptr;
+    int len = longitudTexto(fuente);
+    char* copia = new char[len + 1];
+    copiarTexto(copia, fuente);
+    return copia;
+}
+
+// Función auxiliar: compara si dos textos son iguales
+bool Reserva::sonIguales(const char* a, const char* b) const {
+    if (!a || !b) return false;
+    int i = 0;
+    while (a[i] != '\0' && b[i] != '\0') {
+        totalIteracionesEnReservas++;
+        if (a[i] != b[i]) return false;
+        i++;
+    }
+    return a[i] == b[i];
+}
+
+// Genera un código tipo RSV-0001
+void Reserva::generarCodigo() {
+    char buffer[10];
+    buffer[0] = 'R';
+    buffer[1] = 'S';
+    buffer[2] = 'V';
+    buffer[3] = '-';
+    buffer[4] = (siguienteId / 1000) % 10 + '0';
+    buffer[5] = (siguienteId / 100) % 10 + '0';
+    buffer[6] = (siguienteId / 10) % 10 + '0';
+    buffer[7] = (siguienteId % 10) + '0';
+    buffer[8] = '\0';
+
+    codigo = copiarTexto(buffer);
+    siguienteId++;
+    totalReservasCreadas++;
+}
+
+// Constructor automático
+Reserva::Reserva(const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* huesp,
+                 const char* metPago, const Fecha& fechaPag, double mto, const char* anot)
+    : fechaEntrada(fechaEnt), duracion(dur), alojamiento(aloj), huesped(huesp),
+    fechaPago(fechaPag), monto(mto)
 {
-    // Código manual
-    if (cod) {
-        codigo = new char[std::strlen(cod) + 1];
-        std::strcpy(codigo, cod);
-    } else {
-        codigo = nullptr;
-    }
+    generarCodigo();
+    metodoPago = copiarTexto(metPago);
+    anotaciones = copiarTexto(anot);
+}
 
-    // Método de pago
-    if (metPago) {
-        metodoPago = new char[std::strlen(metPago) + 1];
-        std::strcpy(metodoPago, metPago);
-    } else {
-        metodoPago = nullptr;
-    }
-
-    // Anotaciones
-    if (anot) {
-        anotaciones = new char[std::strlen(anot) + 1];
-        std::strcpy(anotaciones, anot);
-    } else {
-        anotaciones = nullptr;
-    }
+// Constructor con código manual (por ejemplo, desde archivo)
+Reserva::Reserva(const char* cod, const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* huesp,
+                 const char* metPago, const Fecha& fechaPag, double mto, const char* anot)
+    : fechaEntrada(fechaEnt), duracion(dur), alojamiento(aloj), huesped(huesp),
+    fechaPago(fechaPag), monto(mto)
+{
+    codigo = copiarTexto(cod);
+    metodoPago = copiarTexto(metPago);
+    anotaciones = copiarTexto(anot);
+    totalReservasCreadas++;
 }
 
 // Constructor de copia
-Reserva::Reserva(const Reserva& other) :
-    fechaEntrada(other.fechaEntrada),
-    duracion(other.duracion),
-    alojamiento(other.alojamiento),
-    huesped(other.huesped),
-    fechaPago(other.fechaPago),
-    monto(other.monto)
+Reserva::Reserva(const Reserva& otra)
+    : fechaEntrada(otra.fechaEntrada), duracion(otra.duracion),
+    alojamiento(otra.alojamiento), huesped(otra.huesped),
+    fechaPago(otra.fechaPago), monto(otra.monto)
 {
-    // Copiar código
-    if (other.codigo) {
-        codigo = new char[std::strlen(other.codigo) + 1];
-        std::strcpy(codigo, other.codigo);
-    } else {
-        codigo = nullptr;
-    }
-
-    // Copiar método de pago
-    if (other.metodoPago) {
-        metodoPago = new char[std::strlen(other.metodoPago) + 1];
-        std::strcpy(metodoPago, other.metodoPago);
-    } else {
-        metodoPago = nullptr;
-    }
-
-    // Copiar anotaciones
-    if (other.anotaciones) {
-        anotaciones = new char[std::strlen(other.anotaciones) + 1];
-        std::strcpy(anotaciones, other.anotaciones);
-    } else {
-        anotaciones = nullptr;
-    }
+    codigo = copiarTexto(otra.codigo);
+    metodoPago = copiarTexto(otra.metodoPago);
+    anotaciones = copiarTexto(otra.anotaciones);
+    totalReservasCreadas++;
 }
 
 // Operador de asignación
-Reserva& Reserva::operator=(const Reserva& other) {
-    if (this != &other) {
+Reserva& Reserva::operator=(const Reserva& otra) {
+    if (this != &otra) {
         delete[] codigo;
         delete[] metodoPago;
         delete[] anotaciones;
 
-        fechaEntrada = other.fechaEntrada;
-        duracion = other.duracion;
-        alojamiento = other.alojamiento;
-        huesped = other.huesped;
-        fechaPago = other.fechaPago;
-        monto = other.monto;
+        fechaEntrada = otra.fechaEntrada;
+        duracion = otra.duracion;
+        alojamiento = otra.alojamiento;
+        huesped = otra.huesped;
+        fechaPago = otra.fechaPago;
+        monto = otra.monto;
 
-        // Copiar código
-        if (other.codigo) {
-            codigo = new char[std::strlen(other.codigo) + 1];
-            std::strcpy(codigo, other.codigo);
-        } else {
-            codigo = nullptr;
-        }
-
-        // Copiar método de pago
-        if (other.metodoPago) {
-            metodoPago = new char[std::strlen(other.metodoPago) + 1];
-            std::strcpy(metodoPago, other.metodoPago);
-        } else {
-            metodoPago = nullptr;
-        }
-
-        // Copiar anotaciones
-        if (other.anotaciones) {
-            anotaciones = new char[std::strlen(other.anotaciones) + 1];
-            std::strcpy(anotaciones, other.anotaciones);
-        } else {
-            anotaciones = nullptr;
-        }
+        codigo = copiarTexto(otra.codigo);
+        metodoPago = copiarTexto(otra.metodoPago);
+        anotaciones = copiarTexto(otra.anotaciones);
     }
     return *this;
 }
@@ -181,50 +141,22 @@ Fecha Reserva::getFechaPago() const { return fechaPago; }
 double Reserva::getMonto() const { return monto; }
 const char* Reserva::getAnotaciones() const { return anotaciones; }
 
-// Calcula la fecha de salida sumando la duración
+// Calcula la fecha de salida
 Fecha Reserva::calcularFechaSalida() const {
     return fechaEntrada + duracion;
 }
 
-// Muestra comprobante con día de semana y fecha textual
+// Imprime comprobante (formato simple sin iostream)
 void Reserva::mostrarComprobante() const {
-    int dE = fechaEntrada.getDia();
-    int mE = fechaEntrada.getMes();
-    int aE = fechaEntrada.getAnio();
-    int hE = calcularDiaSemana(dE, mE, aE);
+    // Esta función debería redirigirse a un sistema de impresión de consola
+    // adecuado al proyecto. Aquí solo se declara.
+}
 
-    Fecha fS = calcularFechaSalida();
-    int dS = fS.getDia();
-    int mS = fS.getMes();
-    int aS = fS.getAnio();
-    int hS = calcularDiaSemana(dS, mS, aS);
+// Acceso a contadores
+int Reserva::getTotalReservasCreadas() {
+    return totalReservasCreadas;
+}
 
-    static const char* diasSemana[] = {
-        "sabado", "domingo", "lunes", "martes",
-        "miercoles", "jueves", "viernes"
-    };
-    static const char* meses[] = {
-        "enero","febrero","marzo","abril","mayo","junio",
-        "julio","agosto","septiembre","octubre","noviembre","diciembre"
-    };
-
-    std::cout << "----- Comprobante de Reserva -----\n";
-    std::cout << "Codigo: " << (codigo ? codigo : "-") << "\n";
-    std::cout << "Fecha de entrada: " << diasSemana[hE]
-              << ", " << dE << " de " << meses[mE - 1]
-              << " de " << aE << "\n";
-    std::cout << "Fecha de salida:  " << diasSemana[hS]
-              << ", " << dS << " de " << meses[mS - 1]
-              << " de " << aS << "\n";
-    if (metodoPago) {
-        std::cout << "Metodo de pago:   " << metodoPago << "\n";
-        std::cout << "Fecha de pago:    "
-                  << fechaPago.getDia() << "/" << fechaPago.getMes()
-                  << "/" << fechaPago.getAnio() << "\n";
-        std::cout << "Monto pagado:     " << monto << "\n";
-    }
-    if (anotaciones) {
-        std::cout << "Anotaciones:      " << anotaciones << "\n";
-    }
-    std::cout << "---------------------------------\n";
+int Reserva::getTotalIteraciones() {
+    return totalIteracionesEnReservas;
 }
