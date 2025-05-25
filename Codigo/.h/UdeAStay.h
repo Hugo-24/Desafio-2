@@ -17,8 +17,7 @@ private:
     Reserva**   listaReservasHistoricas;
 
     // Fecha de la última ejecución y límite para histórico
-    Fecha fechaCorte;        // histórico hasta aquí
-    // (se inicializa leyendo lastdate.txt y actualiza al arrancar)
+    Fecha fechaCorte;
 
     // Cantidades y capacidades
     int cantidadAnfitriones, capacidadAnfitriones;
@@ -52,6 +51,15 @@ public:
     // Constructor y destructor
     UdeAStay();
     ~UdeAStay();
+
+    // Para pruebas en main()
+    int getCantidadHuespedes() const;
+    int getCantidadAnfitriones() const;
+    int getCantidadAlojamientos() const;
+    int getCantidadReservasVigentes() const;
+    int getCantidadReservasHistoricas() const;
+
+    void mostrarResumenDatos() const;
 
     // Funcionalidad I – Carga y guardado de datos
     void cargarDatosDesdeArchivo();

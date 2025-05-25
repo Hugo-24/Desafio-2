@@ -14,19 +14,23 @@ private:
     int duracion;
     Alojamiento* alojamiento;
     Huesped* huesped;
-    char* metodoPago;
+    int metodoPago;
     Fecha fechaPago;
     double monto;
     char* anotaciones; // hasta 1000 caracteres
 
 public:
+
+    static const int MET_PAGO_PSE     = 0;
+    static const int MET_PAGO_TARJETA = 1;
+
     // Constructor automático: genera código internamente (RSV-0001, RSV-0002, ...)
     Reserva(const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* huesp,
-            const char* metPago, const Fecha& fechaPag, double mto, const char* anot);
+            int metPago, const Fecha& fechaPag, double mto, const char* anot);
 
     // Constructor completo (para casos especiales)
     Reserva(const char* cod, const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* huesp,
-            const char* metPago, const Fecha& fechaPag, double mto, const char* anot);
+            int metPago, const Fecha& fechaPag, double mto, const char* anot);
 
     Reserva(const Reserva& other);
     Reserva& operator=(const Reserva& other);
@@ -38,7 +42,7 @@ public:
     int getDuracion() const;
     Alojamiento* getAlojamiento() const;
     Huesped* getHuesped() const;
-    const char* getMetodoPago() const;
+    int getMetodoPago() const;
     Fecha getFechaPago() const;
     double getMonto() const;
     const char* getAnotaciones() const;

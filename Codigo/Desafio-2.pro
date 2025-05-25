@@ -20,4 +20,13 @@ HEADERS += \
     .h/Huesped.h \
     .h/Anfitrion.h \
     .h/Alojamiento.h \
-    .h/UdeAStay.h \
+    .h/UdeAStay.h
+
+# Archivos de datos que se copiarán al build
+DISTFILES += \
+    datos/huespedes.txt \
+    datos/anfitriones.txt \
+    datos/alojamientos.txt \
+    datos/reservas.txt \
+    datos/historico_reservas.txt\
+    datos/lastdate.txt

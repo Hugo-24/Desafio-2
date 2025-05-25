@@ -19,12 +19,13 @@ static int calcularDiaSemana(int d, int m, int y) {
 // Constructor automático: genera código internamente (RSV-0001, RSV-0002...)
 Reserva::Reserva(const Fecha& fechaEnt, int dur,
                  Alojamiento* aloj, Huesped* huesp,
-                 const char* metPago, const Fecha& fechaPag,
+                 int metPago, const Fecha& fechaPag,
                  double mto, const char* anot) :
     fechaEntrada(fechaEnt),
     duracion(dur),
     alojamiento(aloj),
     huesped(huesp),
+    metodoPago(metPago),
     fechaPago(fechaPag),
     monto(mto)
 {
@@ -33,14 +34,6 @@ Reserva::Reserva(const Fecha& fechaEnt, int dur,
     std::snprintf(buf, sizeof(buf), "RSV-%04d", siguienteId++);
     codigo = new char[std::strlen(buf) + 1];
     std::strcpy(codigo, buf);
-
-    // Método de pago
-    if (metPago) {
-        metodoPago = new char[std::strlen(metPago) + 1];
-        std::strcpy(metodoPago, metPago);
-    } else {
-        metodoPago = nullptr;
-    }
 
     // Anotaciones
     if (anot) {
@@ -54,12 +47,13 @@ Reserva::Reserva(const Fecha& fechaEnt, int dur,
 // Constructor completo (código manual)
 Reserva::Reserva(const char* cod, const Fecha& fechaEnt, int dur,
                  Alojamiento* aloj, Huesped* huesp,
-                 const char* metPago, const Fecha& fechaPag,
+                 int metPago, const Fecha& fechaPag,
                  double mto, const char* anot) :
     fechaEntrada(fechaEnt),
     duracion(dur),
     alojamiento(aloj),
     huesped(huesp),
+    metodoPago(metPago),
     fechaPago(fechaPag),
     monto(mto)
 {
@@ -70,15 +64,6 @@ Reserva::Reserva(const char* cod, const Fecha& fechaEnt, int dur,
     } else {
         codigo = nullptr;
     }
-
-    // Método de pago
-    if (metPago) {
-        metodoPago = new char[std::strlen(metPago) + 1];
-        std::strcpy(metodoPago, metPago);
-    } else {
-        metodoPago = nullptr;
-    }
-
     // Anotaciones
     if (anot) {
         anotaciones = new char[std::strlen(anot) + 1];
@@ -94,6 +79,7 @@ Reserva::Reserva(const Reserva& other) :
     duracion(other.duracion),
     alojamiento(other.alojamiento),
     huesped(other.huesped),
+    metodoPago(other.metodoPago),
     fechaPago(other.fechaPago),
     monto(other.monto)
 {
@@ -104,15 +90,6 @@ Reserva::Reserva(const Reserva& other) :
     } else {
         codigo = nullptr;
     }
-
-    // Copiar método de pago
-    if (other.metodoPago) {
-        metodoPago = new char[std::strlen(other.metodoPago) + 1];
-        std::strcpy(metodoPago, other.metodoPago);
-    } else {
-        metodoPago = nullptr;
-    }
-
     // Copiar anotaciones
     if (other.anotaciones) {
         anotaciones = new char[std::strlen(other.anotaciones) + 1];
@@ -126,13 +103,13 @@ Reserva::Reserva(const Reserva& other) :
 Reserva& Reserva::operator=(const Reserva& other) {
     if (this != &other) {
         delete[] codigo;
-        delete[] metodoPago;
         delete[] anotaciones;
 
         fechaEntrada = other.fechaEntrada;
         duracion = other.duracion;
         alojamiento = other.alojamiento;
         huesped = other.huesped;
+        metodoPago   = other.metodoPago;
         fechaPago = other.fechaPago;
         monto = other.monto;
 
@@ -142,14 +119,6 @@ Reserva& Reserva::operator=(const Reserva& other) {
             std::strcpy(codigo, other.codigo);
         } else {
             codigo = nullptr;
-        }
-
-        // Copiar método de pago
-        if (other.metodoPago) {
-            metodoPago = new char[std::strlen(other.metodoPago) + 1];
-            std::strcpy(metodoPago, other.metodoPago);
-        } else {
-            metodoPago = nullptr;
         }
 
         // Copiar anotaciones
@@ -166,7 +135,6 @@ Reserva& Reserva::operator=(const Reserva& other) {
 // Destructor
 Reserva::~Reserva() {
     delete[] codigo;
-    delete[] metodoPago;
     delete[] anotaciones;
 }
 
@@ -176,7 +144,7 @@ Fecha Reserva::getFechaEntrada() const { return fechaEntrada; }
 int Reserva::getDuracion() const { return duracion; }
 Alojamiento* Reserva::getAlojamiento() const { return alojamiento; }
 Huesped* Reserva::getHuesped() const { return huesped; }
-const char* Reserva::getMetodoPago() const { return metodoPago; }
+int Reserva::getMetodoPago() const { return metodoPago; }
 Fecha Reserva::getFechaPago() const { return fechaPago; }
 double Reserva::getMonto() const { return monto; }
 const char* Reserva::getAnotaciones() const { return anotaciones; }

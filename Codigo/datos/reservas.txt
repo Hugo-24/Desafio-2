@@ -1,0 +1,1 @@
+RSV-0001;12345678;ALO-0001;2025-06-01;4;PSE;2025-05-20;480000;Early check-in, trae mascota
