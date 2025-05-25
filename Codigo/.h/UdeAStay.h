@@ -91,6 +91,19 @@ private:
     Fecha leerFechaArchivo(const char* nombreArchivo);
     void guardarFechaArchivo(const char* nombreArchivo, const Fecha& fecha);
 
+    // Funciones auxiliares para conversión de texto numérico
+    // Para convertir texto numérico a entero (sin usar atoi)
+    int convertirEntero(const char* texto);
+    // Para convertir texto numérico a double (sin usar atof)
+    double convertirDouble(const char* texto);
+
+    // Carga desde archivo histórico adicional
+    void cargarReservasHistoricasDesdeArchivo(const char* ruta);
+
+    // Guardado de reservas en archivos separados
+    void guardarReservasVigentesEnArchivo(const char* ruta);
+    void guardarReservasHistoricasEnArchivo(const char* ruta);
+
 public:
     // SECCIÓN 7: CONSTRUCTOR Y DESTRUCTOR
 
