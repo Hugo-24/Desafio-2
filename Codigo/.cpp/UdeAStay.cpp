@@ -883,22 +883,39 @@ void UdeAStay::guardarDatosEnArchivos() {
     guardarFechaCorte("../codigo/datos/fecha_corte.txt", fechaCorte);
 }
 // Busca al usuario (anfitrión o huésped) y muestra un saludo si existe
-void UdeAStay::iniciarSesion(const char* documento, int tipoUsuario) {
+bool UdeAStay::iniciarSesion(const char* documento, int tipoUsuario) {
+    // Limpiar sesión previa
+    anfitrionActivo = nullptr;
+    huespedActivo   = nullptr;
+
     if (tipoUsuario == TIPO_ANFITRION) {
-        Anfitrion* a = buscarAnfitrionPorDocumento(documento);
-        if (a) {
-            cout << "Bienvenido anfitrion: " << a->getNombreCompleto() << endl;
-        } else {
-            cout << "No se encontró anfitrion con ese documento." << endl;
-        }
-    } else if (tipoUsuario == TIPO_HUESPED) {
-        Huesped* h = buscarHuespedPorDocumento(documento);
-        if (h) {
-            cout << "Bienvenido huesped: " << h->getNombreCompleto() << endl;
-        } else {
-            cout << "No se encontro huesped con ese documento." << endl;
+        anfitrionActivo = buscarAnfitrionPorDocumento(documento);
+        if (anfitrionActivo) {
+            cout << "Bienvenido, anfitrion " << anfitrionActivo->getNombreCompleto() << "!\n";
+            return true;
         }
     }
+    else if (tipoUsuario == TIPO_HUESPED) {
+        huespedActivo = buscarHuespedPorDocumento(documento);
+        if (huespedActivo) {
+            cout << "Bienvenido, huesped " << huespedActivo->getNombreCompleto() << "!\n";
+            return true;
+        }
+    }
+
+    cout << "Credenciales invalidas.\n";
+    return false;
+}
+
+void UdeAStay::cerrarSesion() {
+    if (anfitrionActivo) {
+        cout << "Sesión de anfitrión finalizada.\n";
+    }
+    if (huespedActivo) {
+        cout << "Sesión de huésped finalizada.\n";
+    }
+    anfitrionActivo = nullptr;
+    huespedActivo   = nullptr;
 }
 // Intenta crear una nueva reserva si el huésped y el alojamiento existen, y hay disponibilidad
 void UdeAStay::crearReserva(const char* documentoHuesped,

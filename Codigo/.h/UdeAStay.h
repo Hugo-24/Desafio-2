@@ -36,6 +36,10 @@ private:
     int cantidadReservasVigentes, capacidadReservasVigentes;
     int cantidadReservasHistoricas, capacidadReservasHistoricas;
 
+    //Usuario actuaalmente en sesion
+    Anfitrion* anfitrionActivo;
+    Huesped* huespedActivo;
+
     // Métricas de consumo de recursos
     long totalIteraciones;
     long totalMemoria;
@@ -118,8 +122,12 @@ public:
     // Guarda todos los datos modificados en sus archivos respectivos
     void guardarDatosEnArchivos();
 
-    // Permite iniciar sesión como anfitrión o huésped
-    void iniciarSesion(const char* documentoIdentidad, int tipoUsuario);
+    //Inicia sesión y fija el usuario activo según el documento y rol.
+    //return true si se encontró y estableció el usuario activo.
+    bool iniciarSesion(const char* documento, int tipoUsuario);
+
+    // Cierra la sesión actual (reset de usuario activo)
+    void cerrarSesion();
 
     // Crea una nueva reserva a partir de datos provistos por un huésped
     void crearReserva(const char* documentoHuesped,
