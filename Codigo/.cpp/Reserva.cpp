@@ -1,55 +1,14 @@
 #include "Reserva.h"
 #include "Alojamiento.h"
 #include "Huesped.h"
+#include "Funciones.h"
 
 // Inicialización de contadores estáticos
 int Reserva::siguienteId = 1;
 int Reserva::totalReservasCreadas = 0;
 int Reserva::totalIteracionesEnReservas = 0;
 
-// Función auxiliar: calcula longitud de texto
-int Reserva::longitudTexto(const char* texto) const {
-    int i = 0;
-    while (texto[i] != '\0') {
-        i++;
-        totalIteracionesEnReservas++;
-    }
-    return i;
-}
-
-// Función auxiliar: copia de texto (como strcpy)
-void Reserva::copiarTexto(char* destino, const char* fuente) const {
-    int i = 0;
-    while (fuente[i] != '\0') {
-        destino[i] = fuente[i];
-        i++;
-        totalIteracionesEnReservas++;
-    }
-    destino[i] = '\0';
-}
-
-// Función auxiliar: crea una copia nueva de texto
-char* Reserva::copiarTexto(const char* fuente) const {
-    if (!fuente) return nullptr;
-    int len = longitudTexto(fuente);
-    char* copia = new char[len + 1];
-    copiarTexto(copia, fuente);
-    return copia;
-}
-
-// Función auxiliar: compara si dos textos son iguales
-bool Reserva::sonIguales(const char* a, const char* b) const {
-    if (!a || !b) return false;
-    int i = 0;
-    while (a[i] != '\0' && b[i] != '\0') {
-        totalIteracionesEnReservas++;
-        if (a[i] != b[i]) return false;
-        i++;
-    }
-    return a[i] == b[i];
-}
-
-// Genera un código tipo RSV-0001
+// Genera un código tipo RSV-0001 automáticamente
 void Reserva::generarCodigo() {
     char buffer[10];
     buffer[0] = 'R';
@@ -62,7 +21,7 @@ void Reserva::generarCodigo() {
     buffer[7] = (siguienteId % 10) + '0';
     buffer[8] = '\0';
 
-    codigo = copiarTexto(buffer);
+    codigo = copiarTexto(buffer);  // Usa Funciones.h
     siguienteId++;
     totalReservasCreadas++;
 }
@@ -78,7 +37,7 @@ Reserva::Reserva(const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* hue
     anotaciones = copiarTexto(anot);
 }
 
-// Constructor con código manual (por ejemplo, desde archivo)
+// Constructor con código manual (desde archivo)
 Reserva::Reserva(const char* cod, const Fecha& fechaEnt, int dur, Alojamiento* aloj, Huesped* huesp,
                  const char* metPago, const Fecha& fechaPag, double mto, const char* anot)
     : fechaEntrada(fechaEnt), duracion(dur), alojamiento(aloj), huesped(huesp),
@@ -141,15 +100,14 @@ Fecha Reserva::getFechaPago() const { return fechaPago; }
 double Reserva::getMonto() const { return monto; }
 const char* Reserva::getAnotaciones() const { return anotaciones; }
 
-// Calcula la fecha de salida
+// Calcula la fecha de salida (fecha entrada + duración)
 Fecha Reserva::calcularFechaSalida() const {
     return fechaEntrada + duracion;
 }
 
-// Imprime comprobante (formato simple sin iostream)
+// Imprime comprobante (formato simple)
 void Reserva::mostrarComprobante() const {
-    // Esta función debería redirigirse a un sistema de impresión de consola
-    // adecuado al proyecto. Aquí solo se declara.
+    // (por implementar si deseas mostrar en consola o guardar en archivo)
 }
 
 // Acceso a contadores
@@ -159,4 +117,12 @@ int Reserva::getTotalReservasCreadas() {
 
 int Reserva::getTotalIteraciones() {
     return totalIteracionesEnReservas;
+}
+
+int Reserva::getSiguienteId() {
+    return siguienteId;
+}
+
+void Reserva::setSiguienteId(int nuevoId) {
+    siguienteId = nuevoId;
 }

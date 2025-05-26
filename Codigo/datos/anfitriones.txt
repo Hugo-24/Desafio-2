@@ -1,2 +1,2 @@
-ANF-0001;Carlos Mejia;11445566;20;4.5
-ANF-0002;Maria Camacho;22889977;12;4.8
+11445566;Carlos Mejia;20;4.5
+22889977;Maria Camacho;12;4.8

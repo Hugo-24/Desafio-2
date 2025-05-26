@@ -9,11 +9,12 @@
 
 // Clase principal que administra el sistema UdeAStay.
 // Se encarga de gestionar los datos y operaciones del sistema:
-// - Carga de archivos
-// - Gestión de reservas
-// - Inicio de sesión
+// - Carga y guardado automático de datos en archivos
+// - Gestión de reservas y fechas de corte
+// - Inicio de sesión de usuarios
 // - Consultas por anfitrión
-// - Métricas de consumo
+// - Métricas de consumo del sistema
+
 class UdeAStay {
 private:
     // SECCIÓN 1: ESTRUCTURAS INTERNAS
@@ -41,6 +42,10 @@ private:
     int archivosAbiertos;
     int lineasLeidas;
 
+    // Constantes para tipo de usuario y método de pago
+    enum TipoUsuario { TIPO_ANFITRION = 0, TIPO_HUESPED = 1 };
+    enum MetodoPago { METODO_PSE = 0, METODO_TARJETA_CREDITO = 1 };
+
     // SECCIÓN 2: REDIMENSIONAMIENTO
 
     void redimensionarAnfitriones();
@@ -55,19 +60,19 @@ private:
     Anfitrion* buscarAnfitrionPorDocumento(const char* documento);
     Alojamiento* buscarAlojamientoPorCodigo(const char* codigo);
 
-    int buscarHuespedIndex(const char* documento);     // Para pruebas o referencias cruzadas
+    int buscarHuespedIndex(const char* documento);
     int buscarAlojamientoIndex(const char* codigo);
     Reserva* buscarReserva(const char* codigo);
 
     // SECCIÓN 4: MANEJO DE TEXTO
 
-    char* copiarTexto(const char* fuente);
-    bool sonIguales(const char* a, const char* b);
-    bool iniciaCon(const char* texto, const char* prefijo);
+    // Funciones de texto reutilizadas desde Funciones.h
 
     // SECCIÓN 5: FUNCIONES AUXILIARES
 
     bool validarDisponibilidad(Alojamiento* a, const Fecha& inicio, int duracion);
+    Fecha leerFechaMasRecienteDelHistorico(const char* ruta);
+    bool esFechaPosterior(const Fecha& nuevaFecha, const Fecha& fechaExistente);
 
     char* extraerCampo(const char* linea, int indice);
     int contarCampos(const char* linea);
@@ -75,34 +80,29 @@ private:
 
     // SECCIÓN 6: MANEJO DE ARCHIVOS
 
-    // Carga desde archivos .txt
-    void cargarAnfitrionesDesdeArchivo(const char* ruta);
-    void cargarHuespedesDesdeArchivo(const char* ruta);
-    void cargarAlojamientosDesdeArchivo(const char* ruta);
-    void cargarReservasDesdeArchivo(const char* ruta);
+    // Carga desde archivos .txt (ubicados en ../datos/)
+    void cargarAnfitriones(const char* ruta);
+    void cargarHuespedes(const char* ruta);
+    void cargarAlojamientos(const char* ruta);
+    void cargarReservasVigentes(const char* ruta);
+    void cargarReservasHistoricas(const char* ruta);
+    void cargarFechaCorte(const char* ruta);
 
-    // Guardado en archivos .txt (puedes completar luego)
-    void guardarAnfitrionesEnArchivo(const char* ruta);
-    void guardarHuespedesEnArchivo(const char* ruta);
-    void guardarAlojamientosEnArchivo(const char* ruta);
-    void guardarReservasEnArchivo(const char* ruta);
+    // Guardado en archivos .txt
+    void guardarAnfitriones(const char* ruta);
+    void guardarHuespedes(const char* ruta);
+    void guardarAlojamientos(const char* ruta);
+    void guardarReservasVigentes(const char* ruta);
+    void guardarReservasHistoricas(const char* ruta);
+    void guardarFechaCorte(const char* ruta, const Fecha& fecha);
 
-    // Persistencia de la fecha de corte
-    Fecha leerFechaArchivo(const char* nombreArchivo);
-    void guardarFechaArchivo(const char* nombreArchivo, const Fecha& fecha);
-
-    // Funciones auxiliares para conversión de texto numérico
-    // Para convertir texto numérico a entero (sin usar atoi)
+    // Conversión de texto numérico sin atoi/atof
     int convertirEntero(const char* texto);
-    // Para convertir texto numérico a double (sin usar atof)
     double convertirDouble(const char* texto);
 
-    // Carga desde archivo histórico adicional
-    void cargarReservasHistoricasDesdeArchivo(const char* ruta);
-
-    // Guardado de reservas en archivos separados
-    void guardarReservasVigentesEnArchivo(const char* ruta);
-    void guardarReservasHistoricasEnArchivo(const char* ruta);
+    // Utilidad para reservas
+    char* generarCodigoReserva();
+    void crearReservaDesdeTexto(const char* linea);
 
 public:
     // SECCIÓN 7: CONSTRUCTOR Y DESTRUCTOR
@@ -112,14 +112,16 @@ public:
 
     // SECCIÓN 8: FUNCIONALIDADES PRINCIPALES
 
-    // Funcionalidad I – Carga y guardado de datos
-    void cargarDatosDesdeArchivo();
-    void guardarDatosEnArchivo();
+    // Carga todos los archivos base del sistema al iniciar
+    void cargarDatosDesdeArchivos();
 
-    // Funcionalidad II – Iniciar sesión por documento
+    // Guarda todos los datos modificados en sus archivos respectivos
+    void guardarDatosEnArchivos();
+
+    // Permite iniciar sesión como anfitrión o huésped
     void iniciarSesion(const char* documentoIdentidad, int tipoUsuario);
 
-    // Funcionalidad III – Crear nueva reserva
+    // Crea una nueva reserva a partir de datos provistos por un huésped
     void crearReserva(const char* documentoHuesped,
                       const char* codigoAlojamiento,
                       const Fecha& fechaEntrada,
@@ -129,22 +131,24 @@ public:
                       double monto,
                       const char* anotaciones);
 
-    // Funcionalidad IV – Anular reserva por código
+    // Anula una reserva activa con base en su código
     void anularReserva(const char* codigoReserva);
 
-    // Funcionalidad V – Consultar reservas del anfitrión en un rango
-    void consultarReservasAnfitrion(const char* documentoAnfitrion,const Fecha& desde,const Fecha& hasta);
+    // Consulta las reservas asociadas a un anfitrión en un rango de fechas
+    void consultarReservasAnfitrion(const char* documentoAnfitrion,
+                                    const Fecha& desde,
+                                    const Fecha& hasta);
 
-    // Funcionalidad VI – Actualizar histórico con nueva fecha de corte
+    // Mueve las reservas anteriores a la nueva fecha de corte al histórico
     void actualizarHistorico(const Fecha& nuevaFechaCorte);
 
-    // Funcionalidad VII – Medir consumo de recursos
+    // Mide el consumo interno de recursos del sistema
     void medirConsumoDeRecursos();
 
-    // Funcionalidad auxiliar – Mostrar estado general
+    // Muestra un resumen general del estado actual del sistema
     void mostrarResumenDatos() const;
 
-    // Getters de cantidad de elementos
+    // Getters para obtener métricas actuales del sistema
     int getCantidadHuespedes() const;
     int getCantidadAnfitriones() const;
     int getCantidadAlojamientos() const;

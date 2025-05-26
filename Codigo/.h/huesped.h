@@ -1,6 +1,7 @@
 #ifndef HUESPED_H
 #define HUESPED_H
 
+#include "Fecha.h"
 class Reserva;
 
 // Clase que representa a un huésped que realiza reservas en el sistema.
@@ -17,13 +18,9 @@ private:
     int cantidadReservas;
     int capacidadReservas;
 
-    // Funciones auxiliares
-    int longitudTexto(const char* texto) const;
-    void copiarTexto(char* destino, const char* fuente) const;
-    char* copiarTexto(const char* fuente) const;
-    bool sonIguales(const char* a, const char* b) const;
-    void redimensionarReservas();
-    void generarCodigo();
+    // Funciones internas
+    void redimensionarReservas();     // Duplica capacidad si se llena
+    void generarCodigo();             // Generador tipo HSP-0001
 
     // Contadores estáticos
     static int siguienteId;
@@ -43,7 +40,7 @@ public:
     // Destructor
     ~Huesped();
 
-    // Métodos de acceso
+    // Accesores
     const char* getCodigo() const;
     const char* getNombreCompleto() const;
     const char* getDocumentoIdentidad() const;
@@ -54,13 +51,13 @@ public:
 
     // Gestión de reservas
     void agregarReserva(Reserva* reserva);
-    void anularReservacion(const char* codigoReserva);
+    void anularReservacion(const Fecha& fecha, int duracion);
     void mostrarReservas() const;
 
-    // Muestra resumen (nombre, documento, reservas)
+    // Muestra resumen de info básica
     void imprimirResumen() const;
 
-    // Acceso a los contadores
+    // Estadísticas globales
     static int getTotalHuespedesCreados();
     static int getTotalIteraciones();
 };
