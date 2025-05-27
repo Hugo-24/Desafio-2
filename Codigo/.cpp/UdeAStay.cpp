@@ -214,6 +214,109 @@ Reserva* UdeAStay::buscarReserva(const char* codigo) {
     }
     return nullptr;
 }
+void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
+                                  int duracion,
+                                  const char* municipio,
+                                  double precioMaximo,
+                                  float puntuacionMinima,
+                                  const char* codigo)
+{
+    const int MAX_RESULTADOS = 100;
+    Alojamiento* resultados[MAX_RESULTADOS];
+    int totalResultados = 0;
+
+    // Búsqueda por código directo si se provee
+    if (codigo != nullptr) {
+        Alojamiento* a = buscarAlojamientoPorCodigo(codigo);
+        if (a &&
+            (municipio == nullptr || sonIguales(a->getMunicipio(), municipio)) &&
+            validarDisponibilidad(a, fechaInicio, duracion) &&
+            (precioMaximo < 0 || a->getPrecioPorNoche() <= precioMaximo) &&
+            (puntuacionMinima < 0 || a->getAnfitrionResponsable()->getPuntuacion() >= puntuacionMinima))
+        {
+            resultados[totalResultados++] = a;
+        }
+    } else {
+        // Búsqueda por filtros
+        for (int i = 0; i < cantidadAlojamientos && totalResultados < MAX_RESULTADOS; i++) {
+            Alojamiento* a = listaAlojamientos[i];
+            if (!sonIguales(a->getMunicipio(), municipio)) continue;
+            if (!validarDisponibilidad(a, fechaInicio, duracion)) continue;
+            if (precioMaximo >= 0 && a->getPrecioPorNoche() > precioMaximo) continue;
+            if (puntuacionMinima >= 0 && a->getAnfitrionResponsable()->getPuntuacion() < puntuacionMinima) continue;
+
+            resultados[totalResultados++] = a;
+        }
+    }
+
+    if (totalResultados == 0) {
+        cout << "No se encontraron alojamientos disponibles." << endl;
+        return;
+    }
+
+    cout << "\nAlojamientos disponibles:\n";
+    for (int i = 0; i < totalResultados; i++) {
+        Alojamiento* a = resultados[i];
+        cout << i + 1 << ". Codigo: " << a->getCodigo()
+             << " | Nombre: " << a->getNombre()
+             << " | Precio: " << a->getPrecioPorNoche()
+             << " | Puntuación anfitrion: " << a->getAnfitrionResponsable()->getPuntuacion()
+             << endl;
+    }
+
+    // Capturar elección del usuario
+    int seleccion = 0;
+    do {
+        cout << "\nIngrese el numero del alojamiento que desea reservar (0 para cancelar): ";
+        cin >> seleccion;
+        cin.ignore(10000, '\n');
+        if (seleccion < 0 || seleccion > totalResultados) {
+            cout << "Seleccion invalida. Intente de nuevo." << endl;
+        }
+    } while (seleccion < 0 || seleccion > totalResultados);
+
+    if (seleccion == 0) {
+        cout << "Reserva cancelada por el usuario." << endl;
+        return;
+    }
+
+    Alojamiento* elegido = resultados[seleccion - 1];
+
+    // Recopilar datos para crear la reserva
+    int duracionReserva, metodoPago;
+    int d2, m2, a2;
+    double monto;
+    char anotaciones[1000];
+
+    cout << "Confirmar duracion de la reserva (noches): ";
+    cin >> duracionReserva;
+    cout << "Metodo de pago (0 = PSE, 1 = TCredito): ";
+    cin >> metodoPago;
+    cout << "Fecha de pago (dd mm aaaa): ";
+    cin >> d2 >> m2 >> a2;
+    double precioUnitario = elegido->getPrecioPorNoche();
+    monto = precioUnitario * duracionReserva;
+    cout << "Monto total calculado: " << monto << endl;
+    cin.ignore(10000, '\n');
+
+    cout << "Anotaciones (opcional): ";
+    cin.getline(anotaciones, 1000);
+
+    // Invocar la creación de reserva
+    crearReserva(
+        huespedActivo->getDocumentoIdentidad(),
+        elegido->getCodigo(),
+        fechaInicio,
+        duracionReserva,
+        metodoPago,
+        Fecha(d2, m2, a2),
+        monto,
+        anotaciones
+        );
+    Reserva* ultima = listaReservasVigentes[cantidadReservasVigentes - 1];
+    ultima->imprimirComprobante();
+}
+
 
 // SECCIÓN 4: MANEJO DE TEXTO MANUAL
 //...

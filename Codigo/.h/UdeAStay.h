@@ -68,6 +68,7 @@ private:
     int buscarAlojamientoIndex(const char* codigo);
     Reserva* buscarReserva(const char* codigo);
 
+
     // SECCIÓN 4: MANEJO DE TEXTO
 
     // Funciones de texto reutilizadas desde Funciones.h
@@ -116,6 +117,13 @@ public:
 
     // SECCIÓN 8: FUNCIONALIDADES PRINCIPALES
 
+    // Muestra alojamientos disponibles según filtros (para huésped)
+    void buscarAlojamientos(const Fecha& fechaInicio,
+                            int duracion,
+                            const char* municipio,
+                            double precioMaximo = -1,
+                            float puntuacionMinima = -1,
+                            const char* codigo = nullptr);
     // Carga todos los archivos base del sistema al iniciar
     void cargarDatosDesdeArchivos();
 
@@ -162,6 +170,10 @@ public:
     int getCantidadAlojamientos() const;
     int getCantidadReservasVigentes() const;
     int getCantidadReservasHistoricas() const;
+
+    Huesped* getHuespedActivo() const { return huespedActivo; }
+    Anfitrion* getAnfitrionActivo() const { return anfitrionActivo; }
+
 };
 
 #endif // UDEASTAY_H

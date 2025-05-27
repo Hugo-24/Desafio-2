@@ -1,107 +1,183 @@
 #include "UdeAStay.h"
 #include <iostream>
+#define TIPO_HUESPED 1
+#define TIPO_ANFITRION 0
 
 using namespace std;
 
 int main() {
     UdeAStay sistema;
+    // Cargar datos al iniciar el programa (sin mostrar en el menu)
     sistema.cargarDatosDesdeArchivos();
-    sistema.mostrarResumenDatos();
 
-    cout << "\n===== INICIO DE SESION =====\n";
-    cout << "Seleccione su rol:\n";
-    cout << "0. Anfitrion\n";
-    cout << "1. Huesped\n";
-    cout << "Ingrese opcion: ";
-    int tipoUsuario;
-    cin >> tipoUsuario;
-    cin.ignore();
-
-    if (tipoUsuario != 0 && tipoUsuario != 1) {
-        cout << "Rol invalido. Terminando programa.\n";
-        return 1;
-    }
-
-    char documento[20];
-    cout << "Ingrese su documento de identidad: ";
-    cin.getline(documento, 20);
-
-    if (!sistema.iniciarSesion(documento, tipoUsuario)) {
-        cout << "No se encontro el usuario. Terminando programa.\n";
-        return 1;
-    }
-
-    int opcion;
+    int opcionPrincipal;
     do {
-        cout << "\n===== MENU PRINCIPAL =====\n";
-        if (tipoUsuario == 0) {
-            cout << "1. Consultar reservas en rango\n";
-            cout << "2. Anular reserva\n";
-        } else {
-            cout << "1. Crear nueva reserva\n";
-            cout << "2. Anular reserva\n";
-        }
-        cout << "0. Cerrar sesion\n";
-        cout << "Seleccione una opcion: ";
-        cin >> opcion;
-        cin.ignore();
+        // Menu principal
+        cout << "==== UdeAStay ====" << endl;
+        cout << "1) Iniciar sesionn como HUESPED" << endl;
+        cout << "2) Iniciar sesionn como ANFITRION" << endl;
+        cout << "0) Salir" << endl;
+        cout << "Opcion: ";
+        cin >> opcionPrincipal;
 
-        if (opcion == 1) {
-            if (tipoUsuario == 0) {
-                // Consultar reservas por anfitrión
-                int d1, m1, a1, d2, m2, a2;
-                cout << "Fecha desde (dd mm aaaa): ";
-                cin >> d1 >> m1 >> a1;
-                cout << "Fecha hasta (dd mm aaaa): ";
-                cin >> d2 >> m2 >> a2;
-                cin.ignore();
-                sistema.consultarReservasAnfitrion(documento, Fecha(d1, m1, a1), Fecha(d2, m2, a2));
-            } else {
-                // Crear nueva reserva
-                char codAloj[20], anotaciones[1000];
-                int d, m, a, duracion, metodoPago;
-                double monto;
+        if (opcionPrincipal == 1) {
+            // Inicio de sesion de Huesped
+            char documento[50];
+            cout << "Documento de identidad: ";
+            cin >> documento;
+            // Intentar iniciar sesion como huesped
+            if (sistema.iniciarSesion(documento, TIPO_HUESPED)) {
+                // Obtener puntero al huesped activo para mostrar nombre
+                Huesped* huespedActivo = sistema.getHuespedActivo();
+                const char* nombreH = (huespedActivo != nullptr) ? huespedActivo->getNombreCompleto() : "";
+                int opcionHuesped;
+                do {
+                    // Menu de huesped
+                    cout << "==== MENU DE HUESPED: " << nombreH << " ====" << endl;
+                    cout << "1) Reservar alojamiento" << endl;
+                    cout << "2) Anular reservacion" << endl;
+                    cout << "3) Ver mis reservas" << endl;
+                    cout << "0) Cerrar sesion" << endl;
+                    cout << "Opcion: ";
+                    cin >> opcionHuesped;
 
-                cout << "Codigo del alojamiento: ";
-                cin.getline(codAloj, 20);
+                    if (opcionHuesped == 1) {
+                        // Reservar alojamiento
+                        int d1, m1, a1;
+                        cout << "Fecha de entrada (dd mm aaaa): ";
+                        cin >> d1 >> m1 >> a1;
+                        int duracion;
+                        cout << "Duracion (noches): ";
+                        cin >> duracion;
+                        char municipio[100];
+                        cout << "Municipio: ";
+                        cin >> municipio;
+                        double precioMax;
+                        cout << "Precio maximo (o -1 para omitir): ";
+                        cin >> precioMax;
+                        float puntuacionMin;
+                        cout << "Puntuacion minima (0-5, o -1 para omitir): ";
+                        cin >> puntuacionMin;
+                        // Llamada a la busqueda de alojamientos y creacion de reserva
+                        Fecha fechaEntrada(d1, m1, a1);
+                        sistema.buscarAlojamientos(fechaEntrada, duracion, municipio, precioMax, puntuacionMin, 0);
 
-                cout << "Fecha entrada (dd mm aaaa): ";
-                cin >> d >> m >> a;
-                Fecha entrada(d, m, a);
+                        // Mostrar metricas del sistema
+                        cout << "--- Metricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionHuesped == 2) {
+                        // Anular reservacion
+                        char codigoReserva[20];
+                        cout << "Codigo de reserva a anular: ";
+                        cin >> codigoReserva;
+                        sistema.anularReserva(codigoReserva);
 
-                cout << "Duracion (noches): ";
-                cin >> duracion;
+                        // Mostrar metricas del sistema
+                        cout << "--- Metricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionHuesped == 3) {
+                        // Ver mis reservas
+                        // (No existe una funcion implementada para esto en el sistema)
+                        cout << "Mis reservas (actualmente no implementado para lista específica)." << endl;
 
-                cout << "Metodo de pago (0 = PSE, 1 = TCredito): ";
-                cin >> metodoPago;
-
-                cout << "Fecha pago (dd mm aaaa): ";
-                cin >> d >> m >> a;
-                Fecha pago(d, m, a);
-
-                cout << "Monto total: ";
-                cin >> monto;
-                cin.ignore();
-
-                cout << "Anotaciones: ";
-                cin.getline(anotaciones, 1000);
-
-                sistema.crearReserva(documento, codAloj, entrada, duracion, metodoPago, pago, monto, anotaciones);
+                        // Mostrar metricas del sistema
+                        cout << "--- Metricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionHuesped == 0) {
+                        // Cerrar sesion de huesped y guardar datos
+                        sistema.cerrarSesion();
+                        sistema.guardarDatosEnArchivos();
+                    }
+                    else {
+                        cout << "Opcion invalida. Intente de nuevo." << endl;
+                    }
+                } while (opcionHuesped != 0);
             }
-        } else if (opcion == 2) {
-            char codigo[20];
-            cout << "Codigo de la reserva a anular: ";
-            cin.getline(codigo, 20);
-            sistema.anularReserva(codigo);
-        } else if (opcion != 0) {
-            cout << "Opcion invalida.\n";
+            // Si falla el inicio de sesion, volver al menu principal
         }
-    } while (opcion != 0);
+        else if (opcionPrincipal == 2) {
+            // Inicio de sesion de Anfitrion
+            char documento[50];
+            cout << "Documento de identidad: ";
+            cin >> documento;
+            // Intentar iniciar sesion como anfitrion
+            if (sistema.iniciarSesion(documento, TIPO_ANFITRION)) {
+                // Obtener puntero al anfitrion activo para mostrar nombre
+                Anfitrion* anfitrionActivo = sistema.getAnfitrionActivo();
 
-    sistema.cerrarSesion();
-    sistema.guardarDatosEnArchivos();
-    cout << "\nSesion cerrada y datos guardados correctamente.\n";
-    sistema.medirConsumoDeRecursos();
+                const char* nombreA = (anfitrionActivo != nullptr) ? anfitrionActivo->getNombreCompleto() : "";
+                int opcionAnfitrion;
+                do {
+                    // Menu de anfitrion
+                    cout << "==== MENU DE ANFITRION: " << nombreA << " ====" << endl;
+                    cout << "1) Consultar mis reservas (rango de fechas)" << endl;
+                    cout << "2) Anular reservacion" << endl;
+                    cout << "3) Actualizar historico" << endl;
+                    cout << "0) Cerrar sesion" << endl;
+                    cout << "Opcion: ";
+                    cin >> opcionAnfitrion;
+
+                    if (opcionAnfitrion == 1) {
+                        // Consultar reservas del anfitrion en un rango de fechas
+                        int d1, m1, a1, d2, m2, a2;
+                        cout << "Fecha inicio (dd mm aaaa): ";
+                        cin >> d1 >> m1 >> a1;
+                        cout << "Fecha fin (dd mm aaaa): ";
+                        cin >> d2 >> m2 >> a2;
+                        Fecha inicio(d1, m1, a1);
+                        Fecha fin(d2, m2, a2);
+                        sistema.consultarReservasAnfitrion(documento, inicio, fin);
+
+                        // Mostrar metricas del sistema
+                        cout << "--- Metricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionAnfitrion == 2) {
+                        // Anular reservaci\u00F3n (igual que en huesped)
+                        char codigoReserva[20];
+                        cout << "Codigo de reserva a anular: ";
+                        cin >> codigoReserva;
+                        sistema.anularReserva(codigoReserva);
+
+                        // Mostrar metricas del sistema
+                        cout << "--- Metricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionAnfitrion == 3) {
+                        // Actualizar historico moviendo reservas antiguas
+                        int d1, m1, a1;
+                        cout << "Nueva fecha de corte (dd mm aaaa): ";
+                        cin >> d1 >> m1 >> a1;
+                        Fecha nuevaFecha(d1, m1, a1);
+                        sistema.actualizarHistorico(nuevaFecha);
+
+                        // Mostrar metricas del sistema
+                        cout << "--- M\etricas UdeAStay ---" << endl;
+                        sistema.medirConsumoDeRecursos();
+                    }
+                    else if (opcionAnfitrion == 0) {
+                        // Cerrar sesion de anfitrion y guardar datos
+                        sistema.cerrarSesion();
+                        sistema.guardarDatosEnArchivos();
+                    }
+                    else {
+                        cout << "Opcion invalida. Intente de nuevo." << endl;
+                    }
+                } while (opcionAnfitrion != 0);
+            }
+            // Si falla el inicio de sesion, volver al menu principal
+        }
+        else if (opcionPrincipal == 0) {
+            // Salir del sistema
+            sistema.guardarDatosEnArchivos();
+        }
+        else {
+            cout << "Opcion invalida. Intente de nuevo." << endl;
+        }
+    } while (opcionPrincipal != 0);
 
     return 0;
 }

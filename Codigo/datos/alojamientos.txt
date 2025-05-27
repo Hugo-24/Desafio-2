@@ -1,3 +1,8 @@
-ALO-0001;Casa Colonial;Antioquia;Medellin;Cra 45 #22-33;0;180000;11445566;wifi,parqueadero,cocina
-ALO-0002;Apartamento Centro;Antioquia;Medellin;Cll 10 #30-22;1;120000;22889977;piscina,aire,cocina
-ALO-0003;Cabana Rustica;Antioquia;Guatape;Vereda Los Patos;0;95000;11445566;patio
+ALO-0001;Casa Medellin Centro;Antioquia;Medellin;Cra 50 #50-01;0;180000;11445566;wifi,piscina,cocina
+ALO-0002;Apartamento en El Poblado;Antioquia;Medellin;Calle 10 #35-22;1;120000;22889977;wifi,aire,parqueadero
+ALO-0003;Finca en Santa Fe;Antioquia;SantaFe;Via principal Km 4;0;95000;11445566;piscina,patio,cocina
+ALO-0004;Loft Laureles;Antioquia;Medellin;Calle 33 #70-55;1;135000;22889977;wifi,aire,caja
+ALO-0005;Cabaña Guatape Vista Lago;Antioquia;Guatape;Vereda El Penol;0;200000;11445566;piscina,parqueadero,patio,cocina
+ALO-0006;Estudio Sabaneta;Antioquia;Sabaneta;Calle 65 #45-12;1;85000;22889977;wifi,cocina
+ALO-0007;Apartamento Envigado;Antioquia;Envigado;Calle 45 #22-10;1;110000;33667788;wifi,aire,parqueadero
+ALO-0008;Casa Guarne;Antioquia;Guarne;Vereda La Ceja;0;90000;44558899;parqueadero,patio,cocina
