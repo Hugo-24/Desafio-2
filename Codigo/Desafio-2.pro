@@ -26,3 +26,5 @@ HEADERS += \
     .h/Alojamiento.h \
     .h/UdeAStay.h \
     .h/Funciones.h
+
+DISTFILES += datos/*.txt

@@ -2,6 +2,8 @@
 #include "Alojamiento.h"
 #include "Huesped.h"
 #include "Funciones.h"
+#include <iostream>
+
 
 // Inicialización de contadores estáticos
 int Reserva::siguienteId = 1;
@@ -105,9 +107,56 @@ Fecha Reserva::calcularFechaSalida() const {
     return fechaEntrada + duracion;
 }
 
+// Algoritmo para el día de la semana (Zeller)
+static int calcularDiaSemana(int d, int m, int y) {
+    if (m < 3) { m += 12; y -= 1; }
+    int K = y % 100;
+    int J = y / 100;
+    int q = d;
+    int h = (q + (13 * (m + 1)) / 5 + K + K / 4 + J / 4 + 5 * J) % 7;
+    return h; // 0=sábado, 1=domingo, 2=lunes, ..., 6=viernes
+}
 // Imprime comprobante (formato simple)
 void Reserva::mostrarComprobante() const {
-    // (por implementar si deseas mostrar en consola o guardar en archivo)
+    int dE = fechaEntrada.getDia();
+    int mE = fechaEntrada.getMes();
+    int aE = fechaEntrada.getAnio();
+    int hE = calcularDiaSemana(dE, mE, aE);
+
+    Fecha fS = calcularFechaSalida();
+    int dS = fS.getDia();
+    int mS = fS.getMes();
+    int aS = fS.getAnio();
+    int hS = calcularDiaSemana(dS, mS, aS);
+
+    static const char* diasSemana[] = {
+        "sabado", "domingo", "lunes", "martes",
+        "miercoles", "jueves", "viernes"
+    };
+    static const char* meses[] = {
+        "enero","febrero","marzo","abril","mayo","junio",
+        "julio","agosto","septiembre","octubre","noviembre","diciembre"
+    };
+
+    std::cout << "----- Comprobante de Reserva -----\n";
+    std::cout << "Codigo: " << (codigo ? codigo : "-") << "\n";
+    std::cout << "Fecha de entrada: " << diasSemana[hE]
+              << ", " << dE << " de " << meses[mE - 1]
+              << " de " << aE << "\n";
+    std::cout << "Fecha de salida:  " << diasSemana[hS]
+              << ", " << dS << " de " << meses[mS - 1]
+              << " de " << aS << "\n";
+    if (metodoPago) {
+        std::cout << "Metodo de pago:   " << metodoPago << "\n";
+        std::cout << "Fecha de pago:    "
+                  << fechaPago.getDia() << "/" << fechaPago.getMes()
+                  << "/" << fechaPago.getAnio() << "\n";
+        std::cout << "Monto pagado:     " << monto << "\n";
+    }
+    if (anotaciones) {
+        std::cout << "Anotaciones:      " << anotaciones << "\n";
+    }
+    std::cout << "---------------------------------\n";
 }
 
 // Acceso a contadores

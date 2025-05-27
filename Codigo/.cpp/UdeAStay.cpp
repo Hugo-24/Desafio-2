@@ -260,7 +260,7 @@ void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
         cout << i + 1 << ". Codigo: " << a->getCodigo()
              << " | Nombre: " << a->getNombre()
              << " | Precio: " << a->getPrecioPorNoche()
-             << " | Puntuación anfitrion: " << a->getAnfitrionResponsable()->getPuntuacion()
+             << " | Puntuacion anfitrion: " << a->getAnfitrionResponsable()->getPuntuacion()
              << endl;
     }
 
@@ -1134,7 +1134,7 @@ void UdeAStay::medirConsumoDeRecursos() {
     cout << "Total de iteraciones:  " << totalIteraciones << endl;
     cout << "Memoria dinamica (bytes): " << totalMemoria << endl;
     cout << "Archivos abiertos:     " << archivosAbiertos << endl;
-    cout << "Líneas leidas:         " << lineasLeidas << endl;
+    cout << "Lineas leidas:         " << lineasLeidas << endl;
     cout << "===================================" << endl;
 }
 
