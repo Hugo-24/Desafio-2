@@ -314,7 +314,7 @@ void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
         anotaciones
         );
     Reserva* ultima = listaReservasVigentes[cantidadReservasVigentes - 1];
-    ultima->imprimirComprobante();
+    ultima->mostrarComprobante();
 }
 
 
