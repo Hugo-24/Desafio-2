@@ -153,6 +153,22 @@ void Huesped::mostrarReservas() const {
     }
 }
 
+// Verifica si el huesped ya tiene una reserva que se cruce con el nuevo intento de reserva
+bool Huesped::verificaCruce(const Fecha& inicio, int duracion) const {
+    Fecha finNueva = inicio + (duracion - 1);
+    for (int i = 0; i < cantidadReservas; i++) {
+        Fecha entradaExistente = listaReservas[i]->getFechaEntrada();
+        int duracionExistente = listaReservas[i]->getDuracion();
+        Fecha finExistente = entradaExistente + (duracionExistente - 1);
+
+        // Si se cruzan las fechas: hay conflicto
+        if (!(finNueva < entradaExistente || finExistente < inicio)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Contadores
 int Huesped::getTotalHuespedesCreados() {
     return totalHuespedesCreados;

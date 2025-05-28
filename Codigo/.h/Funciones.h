@@ -8,6 +8,7 @@ extern long totalMemoriaGlobal;
 char* copiarTexto(const char* fuente);
 bool sonIguales(const char* a, const char* b);
 bool iniciaCon(const char* texto, const char* prefijo);
+void extraerFecha(const char* texto, int& dia, int& mes, int& anio);
 
 // Template para redimensionar cualquier arreglo tipo T*
 template <typename T>

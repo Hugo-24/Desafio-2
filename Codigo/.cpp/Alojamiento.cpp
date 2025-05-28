@@ -119,10 +119,19 @@ void Alojamiento::mostrarAmenidades() const {
 }
 
 // Verifica si hay una reserva con esa fecha exacta
-bool Alojamiento::estaDisponible(const Fecha& inicio) const {
+bool Alojamiento::estaDisponible(const Fecha& inicio, int duracion) const {
     for (int i = 0; i < cantidadReservaciones; i++) {
         totalIteracionesEnReservas++;
-        if (inicio == fechasInicioReservadas[i]) return false;
+        Fecha reservada = fechasInicioReservadas[i];
+        int dur = duracionesReservadas[i];
+
+        // Verifica cruce de fechas
+        Fecha finIntento = inicio + (duracion - 1);
+        Fecha finReservada = reservada + (dur - 1);
+
+        if (!(finIntento < reservada || finReservada < inicio)) {
+            return false; // hay cruce
+        }
     }
     return true;
 }

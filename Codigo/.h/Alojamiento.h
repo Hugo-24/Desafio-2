@@ -66,7 +66,7 @@ public:
     void mostrarAmenidades() const;
 
     // Gestión de reservas
-    bool estaDisponible(const Fecha& inicio) const;
+    bool estaDisponible(const Fecha& inicio, int duracion) const;
     void agregarReservacion(const Fecha& inicio, int duracion);
     void eliminarReservacion(const Fecha& inicio, int duracion);
     void mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const;

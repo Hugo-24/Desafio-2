@@ -74,6 +74,17 @@ char* Fecha::toString() const {
     return texto;
 }
 
+// Verifica si dos intervalos de fechas se solapan (hay cruce de noches)
+// *this representa la fecha actual sobre la cual se llamó el método.
+// Al hacer "*this + n", estamos sumando días a esta misma fecha.
+bool Fecha::seCruzaCon(const Fecha& otra, int duracionOtra) const {
+    Fecha fin1 = *this + (duracionOtra - 1); // Fecha final del rango actual
+    Fecha fin2 = otra + (duracionOtra - 1);  // Fecha final del otro rango
+
+    // No se cruzan si una empieza después de que la otra termina
+    return !(fin1 < otra || fin2 < *this);
+}
+
 // Comparación de igualdad
 bool Fecha::operator==(const Fecha& otra) const {
     return dia == otra.dia && mes == otra.mes && anio == otra.anio;

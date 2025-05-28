@@ -145,17 +145,16 @@ Reserva* UdeAStay::buscarReserva(const char* codigo) {
     }
     return nullptr;
 }
-void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
-                                  int duracion,
-                                  const char* municipio,
-                                  double precioMaximo,
-                                  float puntuacionMinima,
-                                  const char* codigo)
+void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,int duracion,const char* municipio,double precioMaximo,float puntuacionMinima,const char* codigo)
 {
     const int MAX_RESULTADOS = 100;
     Alojamiento* resultados[MAX_RESULTADOS];
     int totalResultados = 0;
-
+    // Verificación previa de cruce de fechas
+    if (huespedActivo && huespedActivo->verificaCruce(fechaInicio, duracion)) {
+        cout << "Ya tiene una reserva en esas fechas. No puede reservar otro alojamiento.\n";
+        return;
+    }
     // Búsqueda por código directo si se provee
     if (codigo != nullptr) {
         Alojamiento* a = buscarAlojamientoPorCodigo(codigo);
@@ -163,23 +162,37 @@ void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
             (municipio == nullptr || sonIguales(a->getMunicipio(), municipio)) &&
             validarDisponibilidad(a, fechaInicio, duracion) &&
             (precioMaximo < 0 || a->getPrecioPorNoche() <= precioMaximo) &&
-            (puntuacionMinima < 0 || a->getAnfitrionResponsable()->getPuntuacion() >= puntuacionMinima))
+            (puntuacionMinima < 0 || a->getAnfitrionResponsable()->getPuntuacion() >= puntuacionMinima) &&
+            (!huespedActivo || !huespedActivo->verificaCruce(fechaInicio, duracion)) // Validación de cruce de fechas
+            )
         {
             resultados[totalResultados++] = a;
         }
     } else {
         // Búsqueda por filtros
         for (int i = 0; i < cantidadAlojamientos && totalResultados < MAX_RESULTADOS; i++) {
+            totalIteraciones++;
             Alojamiento* a = listaAlojamientos[i];
-            if (!sonIguales(a->getMunicipio(), municipio)) continue;
-            if (!validarDisponibilidad(a, fechaInicio, duracion)) continue;
-            if (precioMaximo >= 0 && a->getPrecioPorNoche() > precioMaximo) continue;
-            if (puntuacionMinima >= 0 && a->getAnfitrionResponsable()->getPuntuacion() < puntuacionMinima) continue;
 
+            // El municipio debe coincidir exactamente
+            if (!sonIguales(a->getMunicipio(), municipio))
+                continue;  // Si no coincide, pasamos al siguiente alojamiento
+
+            // El alojamiento debe estar disponible en las fechas indicadas
+            if (!validarDisponibilidad(a, fechaInicio, duracion))
+                continue;  // Si no está disponible, lo descartamos
+
+            // Si el usuario indicó un precio máximo, no se deben mostrar alojamientos más caros
+            if (precioMaximo >= 0 && a->getPrecioPorNoche() > precioMaximo)
+                continue;  // Si el precio excede el límite, descartamos
+
+            // Si el usuario indicó una puntuación mínima, el anfitrión debe cumplirla
+            if (puntuacionMinima >= 0 && a->getAnfitrionResponsable()->getPuntuacion() < puntuacionMinima)
+                continue;  // Si el anfitrión tiene menor puntuación, descartamos
+            // Si pasó todos los filtros anteriores, se añade a los resultados
             resultados[totalResultados++] = a;
         }
     }
-
     if (totalResultados == 0) {
         cout << "No se encontraron alojamientos disponibles." << endl;
         return;
@@ -187,6 +200,7 @@ void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
 
     cout << "\nAlojamientos disponibles:\n";
     for (int i = 0; i < totalResultados; i++) {
+        totalIteraciones++;
         Alojamiento* a = resultados[i];
         cout << i + 1 << ". Codigo: " << a->getCodigo()
              << " | Nombre: " << a->getNombre()
@@ -244,6 +258,8 @@ void UdeAStay::buscarAlojamientos(const Fecha& fechaInicio,
         monto,
         anotaciones
         );
+
+    // Mostrar comprobante de la nueva reserva creada
     Reserva* ultima = listaReservasVigentes[cantidadReservasVigentes - 1];
     ultima->mostrarComprobante();
 }
@@ -258,12 +274,7 @@ bool UdeAStay::validarDisponibilidad(Alojamiento* alojamiento, const Fecha& inic
     if (!alojamiento) return false;
 
     Fecha actual = inicio;
-    for (int i = 0; i < duracion; i++) {
-        if (!alojamiento->estaDisponible(actual)) return false;
-        actual = actual + 1;
-        totalIteraciones++;
-    }
-    return true;
+    return alojamiento->estaDisponible(inicio, duracion);
 }
 
 // Extrae el campo en la posición `indice` de una línea separada por `;`
@@ -324,6 +335,7 @@ void UdeAStay::dividirAmenidades(Alojamiento* alojamiento, const char* texto) {
 
     int i = 0, inicio = 0;
     while (true) {
+        totalIteraciones++;
         if (texto[i] == ',' || texto[i] == '\0') {
             int longitud = i - inicio;
             char* palabra = new char[longitud + 1];
@@ -336,6 +348,7 @@ void UdeAStay::dividirAmenidades(Alojamiento* alojamiento, const char* texto) {
             palabra[longitud] = '\0';
 
             for (int k = 0; k < totalAmenidades; k++) {
+                totalIteraciones++;
                 if (sonIguales(palabra, amenidadesConocidas[k])) {
                     alojamiento->agregarAmenidad(k);
                     break;
@@ -348,6 +361,7 @@ void UdeAStay::dividirAmenidades(Alojamiento* alojamiento, const char* texto) {
 
         if (texto[i] == '\0') break;
         i++;
+        totalIteraciones++;
     }
 }
 
@@ -369,7 +383,7 @@ Fecha UdeAStay::leerFechaMasRecienteDelHistorico(const char* ruta) {
     archivo.close();
 
     int d, m, a;
-    sscanf(buffer, "%d-%d-%d", &d, &m, &a);
+    extraerFecha(buffer, d, m, a);
     return Fecha(d, m, a);
 }
 
@@ -769,11 +783,11 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
 
     // Procesar fecha entrada
     int d, m, a;
-    sscanf(fechaTexto, "%d-%d-%d", &d, &m, &a);
+    extraerFecha(fechaTexto, d, m, a);
     Fecha fechaEntrada(d, m, a);
 
     // Procesar fecha pago
-    sscanf(fechaPagoTexto, "%d-%d-%d", &d, &m, &a);
+    extraerFecha(fechaPagoTexto, d, m, a);
     Fecha fechaPago(d, m, a);
 
     int duracion = convertirEntero(duracionTexto);
@@ -819,6 +833,7 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
     delete[] codAloj; delete[] docHuesped; delete[] metodo;
     delete[] fechaPagoTexto; delete[] montoTexto; delete[] anotaciones;
 }
+
 // SECCIÓN 7: CONSTRUCTOR Y DESTRUCTOR
 // Constructor principal: inicializa las listas y contadores
 UdeAStay::UdeAStay() {
@@ -943,10 +958,10 @@ bool UdeAStay::iniciarSesion(const char* documento, int tipoUsuario) {
 
 void UdeAStay::cerrarSesion() {
     if (anfitrionActivo) {
-        cout << "Sesión de anfitrión finalizada.\n";
+        cout << "Sesion de anfitrion finalizada.\n";
     }
     if (huespedActivo) {
-        cout << "Sesión de huésped finalizada.\n";
+        cout << "Sesion de huesped finalizada.\n";
     }
     anfitrionActivo = nullptr;
     huespedActivo   = nullptr;
@@ -992,6 +1007,7 @@ void UdeAStay::crearReserva(const char* documentoHuesped,
 // Busca y elimina una reserva tanto del huésped como del alojamiento
 void UdeAStay::anularReserva(const char* codigoReserva) {
     for (int i = 0; i < cantidadReservasVigentes; i++) {
+        totalIteraciones++;
         if (sonIguales(listaReservasVigentes[i]->getCodigo(), codigoReserva)) {
             Huesped* h = listaReservasVigentes[i]->getHuesped();
             Alojamiento* a = listaReservasVigentes[i]->getAlojamiento();
@@ -1008,6 +1024,7 @@ void UdeAStay::anularReserva(const char* codigoReserva) {
 
             delete listaReservasVigentes[i];
             for (int j = i; j < cantidadReservasVigentes - 1; j++) {
+                totalIteraciones++;
                 listaReservasVigentes[j] = listaReservasVigentes[j + 1];
             }
             cantidadReservasVigentes--;
@@ -1017,7 +1034,7 @@ void UdeAStay::anularReserva(const char* codigoReserva) {
         }
     }
 
-    cout << "No se encontró ninguna reserva con ese codigo." << endl;
+    cout << "No se encontro ninguna reserva con ese codigo." << endl;
 }
 // Muestra las reservas en rango para todos los alojamientos de un anfitrión
 void UdeAStay::consultarReservasAnfitrion(const char* documentoAnfitrion,
@@ -1034,6 +1051,7 @@ void UdeAStay::consultarReservasAnfitrion(const char* documentoAnfitrion,
 // Mueve todas las reservas anteriores a la nueva fecha de corte al histórico
 void UdeAStay::actualizarHistorico(const Fecha& nuevaFechaCorte) {
     for (int i = 0; i < cantidadReservasVigentes; ) {
+        totalIteraciones++;
         Fecha entrada = listaReservasVigentes[i]->getFechaEntrada();
         Fecha salida = listaReservasVigentes[i]->calcularFechaSalida();
 
@@ -1046,6 +1064,7 @@ void UdeAStay::actualizarHistorico(const Fecha& nuevaFechaCorte) {
             listaReservasHistoricas[cantidadReservasHistoricas++] = movida;
 
             for (int j = i; j < cantidadReservasVigentes - 1; j++) {
+                totalIteraciones++;
                 listaReservasVigentes[j] = listaReservasVigentes[j + 1];
             }
 
@@ -1081,7 +1100,7 @@ void UdeAStay::medirConsumoDeRecursos() {
 
 void UdeAStay::mostrarReservasHuespedActivo() const {
     if (!huespedActivo) {
-        cout << "No hay huésped activo.\n";
+        cout << "No hay huesped activo.\n";
         return;
     }
 

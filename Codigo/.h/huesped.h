@@ -54,6 +54,9 @@ public:
     void anularReservacion(const Fecha& fecha, int duracion);
     void mostrarReservas() const;
 
+    // Verifica si este huésped ya tiene una reserva que se cruce con la fecha y duración dadas
+    bool verificaCruce(const Fecha& inicio, int duracion) const;
+
     // Muestra resumen de info básica
     void imprimirResumen() const;
 

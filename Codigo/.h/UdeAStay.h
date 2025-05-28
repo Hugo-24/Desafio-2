@@ -47,7 +47,7 @@ private:
     int lineasLeidas;
 
     // Constantes para tipo de usuario y método de pago
-    enum TipoUsuario { TIPO_ANFITRION = 0, TIPO_HUESPED = 1 };
+    enum TipoUsuario { TIPO_ANFITRION = 2, TIPO_HUESPED = 1 };
     enum MetodoPago { METODO_PSE = 0, METODO_TARJETA_CREDITO = 1 };
 
     // SECCIÓN 2: REDIMENSIONAMIENTO

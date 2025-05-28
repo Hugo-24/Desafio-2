@@ -1,18 +1,23 @@
 #include "UdeAStay.h"
 #include <iostream>
+#include "Funciones.h"
+
+// Constantes para distinguir tipos de usuario
 #define TIPO_HUESPED 1
-#define TIPO_ANFITRION 0
+#define TIPO_ANFITRION 2
 
 using namespace std;
 
 int main() {
     UdeAStay sistema;
 
-    // Carga inicial automática de archivos (no se muestra en menú)
+    // Carga inicial de datos desde archivos (no aparece en el menu)
     sistema.cargarDatosDesdeArchivos();
 
     int opcionPrincipal;
+
     do {
+        // Menu principal del sistema
         cout << "\n===== BIENVENIDO A UdeAStay =====\n";
         cout << "1) Iniciar sesion como HUESPED\n";
         cout << "2) Iniciar sesion como ANFITRION\n";
@@ -20,11 +25,14 @@ int main() {
         cout << "Opcion: ";
         cin >> opcionPrincipal;
 
+        // Validacion de entrada
         if (cin.fail()) {
             cin.clear(); cin.ignore(1000, '\n');
-            cout << "Entrada invalida.\n"; continue;
+            cout << "Entrada invalida.\n";
+            continue;
         }
 
+        // --- MENU HUESPED ---
         if (opcionPrincipal == TIPO_HUESPED) {
             char documento[50];
             cout << "Documento de identidad: ";
@@ -44,7 +52,8 @@ int main() {
 
                     if (cin.fail()) {
                         cin.clear(); cin.ignore(1000, '\n');
-                        cout << "Entrada invalida.\n"; continue;
+                        cout << "Entrada invalida.\n";
+                        continue;
                     }
 
                     if (opcionH == 1) {
@@ -53,8 +62,21 @@ int main() {
                         double precioMax;
                         float puntuacionMin;
 
+                        char bufferFecha[20];
                         cout << "Fecha entrada (dd mm aaaa): ";
-                        cin >> d >> m >> a;
+                        cin.ignore();  // limpia el buffer anterior por si acaso
+                        cin.getline(bufferFecha, 20);
+                        extraerFecha(bufferFecha, d, m, a);
+                        if (d == 0 || m == 0 || a == 0) {
+                            cout << "Formato de fecha invalido. Use espacios, guiones o barras.\n";
+                            continue;
+                        }
+                        Fecha fechaEntrada(d, m, a);
+
+                        if (!fechaEntrada.esValida()) {
+                            cout << "Fecha invalida. Intente de nuevo.\n";
+                            continue;
+                        }
                         if (cin.fail()) { cin.clear(); cin.ignore(1000, '\n'); cout << "Fecha invalida.\n"; continue; }
 
                         cout << "Duracion (noches): ";
@@ -71,7 +93,6 @@ int main() {
                         cout << "Puntuacion minima del anfitrion (0-5, -1 para omitir): ";
                         cin >> puntuacionMin;
                         if (cin.fail()) { cin.clear(); cin.ignore(1000, '\n'); cout << "Puntuacion invalida.\n"; continue; }
-
                         sistema.buscarAlojamientos(Fecha(d, m, a), noches, municipio, precioMax, puntuacionMin, 0);
                         cout << "--- Metricas UdeAStay ---\n";
                         sistema.medirConsumoDeRecursos();
@@ -99,6 +120,7 @@ int main() {
                 } while (opcionH != 0);
             }
 
+            // --- MENU ANFITRION ---
         } else if (opcionPrincipal == TIPO_ANFITRION) {
             char documento[50];
             cout << "Documento de identidad: ";
@@ -118,7 +140,8 @@ int main() {
 
                     if (cin.fail()) {
                         cin.clear(); cin.ignore(1000, '\n');
-                        cout << "Entrada invalida.\n"; continue;
+                        cout << "Entrada invalida.\n";
+                        continue;
                     }
 
                     if (opcionA == 1) {
@@ -167,9 +190,11 @@ int main() {
                 } while (opcionA != 0);
             }
 
+            // --- SALIR ---
         } else if (opcionPrincipal == 0) {
             sistema.guardarDatosEnArchivos();
-            cout << "Gracias por usar UdeAStay. ¡Hasta pronto!\n";
+            cout << "Gracias por usar UdeAStay. Hasta pronto!\n";
+
         } else {
             cout << "Opcion invalida.\n";
         }

@@ -47,3 +47,36 @@ bool iniciaCon(const char* texto, const char* prefijo) {
     }
     return true;
 }
+
+// Extrae una fecha en formato dd-mm-aaaa, dd/mm/aaaa o dd mm aaaa
+void extraerFecha(const char* texto, int& dia, int& mes, int& anio) {
+    dia = mes = anio = 0;
+    if (!texto) return;
+
+    int partes[3] = {0, 0, 0};  // día, mes, año
+    int parteActual = 0;
+    int i = 0;
+
+    while (texto[i] != '\0' && parteActual < 3) {
+        if (texto[i] >= '0' && texto[i] <= '9') {
+            partes[parteActual] = partes[parteActual] * 10 + (texto[i] - '0');
+        } else if (texto[i] == '-' || texto[i] == '/' || texto[i] == ' ') {
+            parteActual++;
+        } else {
+            // Caracter inválido → abortamos
+            dia = mes = anio = 0;
+            return;
+        }
+        totalIteracionesGlobales++;
+        i++;
+    }
+
+    if (parteActual == 2) {
+        dia = partes[0];
+        mes = partes[1];
+        anio = partes[2];
+    } else {
+        // No se encontraron 3 partes válidas
+        dia = mes = anio = 0;
+    }
+}
