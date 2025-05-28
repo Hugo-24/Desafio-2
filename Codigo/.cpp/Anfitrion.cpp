@@ -96,18 +96,8 @@ void Anfitrion::setDocumentoIdentidad(const char* documento) {
 
 // Redimensionar alojamientos
 void Anfitrion::redimensionarAlojamientos() {
-    int nuevaCapacidad = capacidadAlojamientos * 2;
-    Alojamiento** nuevoArreglo = new Alojamiento*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadAlojamientos; i++) {
-        nuevoArreglo[i] = listaAlojamientos[i];
-    }
-
-    delete[] listaAlojamientos;
-    listaAlojamientos = nuevoArreglo;
-    capacidadAlojamientos = nuevaCapacidad;
+    listaAlojamientos = redimensionarArreglo(listaAlojamientos, cantidadAlojamientos, capacidadAlojamientos);
 }
-
 // Agrega un nuevo alojamiento
 void Anfitrion::agregarAlojamiento(Alojamiento* alojamiento) {
     if (cantidadAlojamientos == capacidadAlojamientos) {

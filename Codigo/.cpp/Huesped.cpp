@@ -86,15 +86,7 @@ Huesped::~Huesped() {
 
 // Redimensiona el arreglo de reservas (duplica capacidad)
 void Huesped::redimensionarReservas() {
-    int nuevaCap = capacidadReservas * 2;
-    Reserva** nuevo = new Reserva*[nuevaCap];
-    for (int i = 0; i < cantidadReservas; i++) {
-        nuevo[i] = listaReservas[i];
-        totalIteracionesEnReservas++;
-    }
-    delete[] listaReservas;
-    listaReservas = nuevo;
-    capacidadReservas = nuevaCap;
+    listaReservas = redimensionarArreglo(listaReservas, cantidadReservas, capacidadReservas);
 }
 
 // Accesores

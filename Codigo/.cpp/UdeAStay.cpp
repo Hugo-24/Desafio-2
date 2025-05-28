@@ -53,89 +53,20 @@ void UdeAStay::mostrarResumenDatos() const {
 
 // SECCIÓN 2: REDIMENSIONAMIENTO DE LISTAS DINÁMICAS
 
-// Redimensiona la lista de anfitriones al doble de capacidad
 void UdeAStay::redimensionarAnfitriones() {
-    int nuevaCapacidad = capacidadAnfitriones * 2;
-    Anfitrion** nuevaLista = new Anfitrion*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadAnfitriones; i++) {
-        nuevaLista[i] = listaAnfitriones[i];
-        totalIteraciones++;
-    }
-
-    delete[] listaAnfitriones;
-    listaAnfitriones = nuevaLista;
-    capacidadAnfitriones = nuevaCapacidad;
-
-    totalMemoria += nuevaCapacidad * sizeof(Anfitrion*);
+    listaAnfitriones = redimensionarArreglo(listaAnfitriones, cantidadAnfitriones, capacidadAnfitriones);
 }
-
-// Redimensiona la lista de huéspedes
 void UdeAStay::redimensionarHuespedes() {
-    int nuevaCapacidad = capacidadHuespedes * 2;
-    Huesped** nuevaLista = new Huesped*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadHuespedes; i++) {
-        nuevaLista[i] = listaHuespedes[i];
-        totalIteraciones++;
-    }
-
-    delete[] listaHuespedes;
-    listaHuespedes = nuevaLista;
-    capacidadHuespedes = nuevaCapacidad;
-
-    totalMemoria += nuevaCapacidad * sizeof(Huesped*);
+    listaHuespedes = redimensionarArreglo(listaHuespedes, cantidadHuespedes, capacidadHuespedes);
 }
-
-// Redimensiona la lista de alojamientos
 void UdeAStay::redimensionarAlojamientos() {
-    int nuevaCapacidad = capacidadAlojamientos * 2;
-    Alojamiento** nuevaLista = new Alojamiento*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadAlojamientos; i++) {
-        nuevaLista[i] = listaAlojamientos[i];
-        totalIteraciones++;
-    }
-
-    delete[] listaAlojamientos;
-    listaAlojamientos = nuevaLista;
-    capacidadAlojamientos = nuevaCapacidad;
-
-    totalMemoria += nuevaCapacidad * sizeof(Alojamiento*);
+    listaAlojamientos = redimensionarArreglo(listaAlojamientos, cantidadAlojamientos, capacidadAlojamientos);
 }
-
-// Redimensiona la lista de reservas vigentes
 void UdeAStay::redimensionarReservasVigentes() {
-    int nuevaCapacidad = capacidadReservasVigentes * 2;
-    Reserva** nuevaLista = new Reserva*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadReservasVigentes; i++) {
-        nuevaLista[i] = listaReservasVigentes[i];
-        totalIteraciones++;
-    }
-
-    delete[] listaReservasVigentes;
-    listaReservasVigentes = nuevaLista;
-    capacidadReservasVigentes = nuevaCapacidad;
-
-    totalMemoria += nuevaCapacidad * sizeof(Reserva*);
+    listaReservasVigentes = redimensionarArreglo(listaReservasVigentes, cantidadReservasVigentes, capacidadReservasVigentes);
 }
-
-// Redimensiona la lista de reservas históricas
 void UdeAStay::redimensionarReservasHistoricas() {
-    int nuevaCapacidad = capacidadReservasHistoricas * 2;
-    Reserva** nuevaLista = new Reserva*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadReservasHistoricas; i++) {
-        nuevaLista[i] = listaReservasHistoricas[i];
-        totalIteraciones++;
-    }
-
-    delete[] listaReservasHistoricas;
-    listaReservasHistoricas = nuevaLista;
-    capacidadReservasHistoricas = nuevaCapacidad;
-
-    totalMemoria += nuevaCapacidad * sizeof(Reserva*);
+    listaReservasHistoricas = redimensionarArreglo(listaReservasHistoricas, cantidadReservasHistoricas, capacidadReservasHistoricas);
 }
 
 // SECCIÓN 3: FUNCIONES DE BÚSQUEDA EN LISTAS INTERNAS
@@ -1130,12 +1061,32 @@ void UdeAStay::actualizarHistorico(const Fecha& nuevaFechaCorte) {
 }
 // Muestra el uso de recursos del sistema actual
 void UdeAStay::medirConsumoDeRecursos() {
+    // Sumar todas las iteraciones locales y globales
+    long iteracionesTotales =
+        totalIteraciones +
+        Reserva::getTotalIteraciones() +
+        Huesped::getTotalIteraciones() +
+        Anfitrion::getTotalIteraciones() +
+        Alojamiento::getTotalIteraciones() +
+        totalIteracionesGlobales;
+
+    // Se imprime exactamente igual que antes, pero usando la suma
     cout << "Metricas de rendimiento:" << endl;
-    cout << "Total de iteraciones:  " << totalIteraciones << endl;
-    cout << "Memoria dinamica (bytes): " << totalMemoria << endl;
+    cout << "Total de iteraciones:  " << iteracionesTotales << endl;
+    cout << "Memoria dinamica (bytes): " << totalMemoria + totalMemoriaGlobal << endl;
     cout << "Archivos abiertos:     " << archivosAbiertos << endl;
     cout << "Lineas leidas:         " << lineasLeidas << endl;
     cout << "===================================" << endl;
+}
+
+void UdeAStay::mostrarReservasHuespedActivo() const {
+    if (!huespedActivo) {
+        cout << "No hay huésped activo.\n";
+        return;
+    }
+
+    cout << "\n--- Reservas del huésped: " << huespedActivo->getNombreCompleto() << " ---\n";
+    huespedActivo->mostrarReservas(); // Esta función ya está implementada
 }
 
 

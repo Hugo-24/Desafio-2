@@ -164,6 +164,9 @@ public:
     // Muestra un resumen general del estado actual del sistema
     void mostrarResumenDatos() const;
 
+    //Pa ver las reservas de un huesped
+    void mostrarReservasHuespedActivo() const;
+
     // Getters para obtener métricas actuales del sistema
     int getCantidadHuespedes() const;
     int getCantidadAnfitriones() const;
