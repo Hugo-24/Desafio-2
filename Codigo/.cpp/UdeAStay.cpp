@@ -797,27 +797,31 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
     Huesped* huesp = buscarHuespedPorDocumento(docHuesped);
 
     if (!aloj || !huesp) {
-        // No se puede crear reserva si el alojamiento o huésped no existen
+        // Liberar memoria si no se puede crear la reserva
         delete[] cod; delete[] fechaTexto; delete[] duracionTexto;
         delete[] codAloj; delete[] docHuesped; delete[] metodo;
         delete[] fechaPagoTexto; delete[] montoTexto; delete[] anotaciones;
         return;
     }
 
+    // Crear la reserva
     Reserva* nueva = new Reserva(cod, fechaEntrada, duracion, aloj, huesp, metodo, fechaPago, monto, anotaciones);
 
-    // Decidimos si es histórica o vigente según la fecha de salida
+    // Determinar si es histórica o vigente
     Fecha salida = nueva->calcularFechaSalida();
     if (salida < fechaCorte) {
+        // Es histórica
         if (cantidadReservasHistoricas == capacidadReservasHistoricas)
             redimensionarReservasHistoricas();
         listaReservasHistoricas[cantidadReservasHistoricas++] = nueva;
     } else {
+        // Es vigente
         if (cantidadReservasVigentes == capacidadReservasVigentes)
             redimensionarReservasVigentes();
         listaReservasVigentes[cantidadReservasVigentes++] = nueva;
     }
 
+    // Registrar la reserva en el alojamiento y el huésped
     aloj->agregarReservacion(fechaEntrada, duracion);
     huesp->agregarReserva(nueva);
 
@@ -829,6 +833,7 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
         Reserva::setSiguienteId(idNum + 1);
     }
 
+    // Liberar memoria temporal
     delete[] cod; delete[] fechaTexto; delete[] duracionTexto;
     delete[] codAloj; delete[] docHuesped; delete[] metodo;
     delete[] fechaPagoTexto; delete[] montoTexto; delete[] anotaciones;
