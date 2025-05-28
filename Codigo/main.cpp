@@ -19,7 +19,6 @@ int main() {
     // Cargamos todos los datos desde los archivos .txt
     // Esto no lo ve el usuario, pero es lo que permite que todo funcione con la info guardada
     sistema.cargarDatosDesdeArchivos();
-
     int opcionPrincipal;
 
     // Menú principal para escoger si entra como huésped o anfitrión

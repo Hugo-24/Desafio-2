@@ -537,7 +537,7 @@ void UdeAStay::cargarReservasVigentes(const char* ruta) {
 
     while (archivo.getline(linea, 2048)) {
         lineasLeidas++;
-        crearReservaDesdeTexto(linea);
+        crearReservaDesdeTexto(linea,false);
 
         if (cantidadReservasVigentes == capacidadReservasVigentes)
             redimensionarReservasVigentes();
@@ -558,7 +558,7 @@ void UdeAStay::cargarReservasHistoricas(const char* ruta) {
         lineasLeidas++;
 
         // Creamos la reserva y la agregamos a la lista histórica
-        crearReservaDesdeTexto(linea);
+        crearReservaDesdeTexto(linea,true);
 
         if (cantidadReservasHistoricas == capacidadReservasHistoricas)
             redimensionarReservasHistoricas();
@@ -770,7 +770,8 @@ double UdeAStay::convertirDouble(const char* texto) {
 }
 
 // Crea una reserva desde una línea de texto (formato del archivo .txt)
-void UdeAStay::crearReservaDesdeTexto(const char* linea) {
+// Crea una reserva desde texto y fuerza si se trata de una histórica o vigente
+void UdeAStay::crearReservaDesdeTexto(const char* linea, bool esHistorica) {
     char* cod = extraerCampo(linea, 0);
     char* fechaTexto = extraerCampo(linea, 1);
     char* duracionTexto = extraerCampo(linea, 2);
@@ -781,12 +782,11 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
     char* montoTexto = extraerCampo(linea, 7);
     char* anotaciones = extraerCampo(linea, 8);
 
-    // Procesar fecha entrada
+    // Procesar fechas
     int d, m, a;
     extraerFecha(fechaTexto, d, m, a);
     Fecha fechaEntrada(d, m, a);
 
-    // Procesar fecha pago
     extraerFecha(fechaPagoTexto, d, m, a);
     Fecha fechaPago(d, m, a);
 
@@ -797,43 +797,37 @@ void UdeAStay::crearReservaDesdeTexto(const char* linea) {
     Huesped* huesp = buscarHuespedPorDocumento(docHuesped);
 
     if (!aloj || !huesp) {
-        // Liberar memoria si no se puede crear la reserva
+        // Liberar si hay error
         delete[] cod; delete[] fechaTexto; delete[] duracionTexto;
         delete[] codAloj; delete[] docHuesped; delete[] metodo;
         delete[] fechaPagoTexto; delete[] montoTexto; delete[] anotaciones;
         return;
     }
 
-    // Crear la reserva
+    // Crear reserva y asignar
     Reserva* nueva = new Reserva(cod, fechaEntrada, duracion, aloj, huesp, metodo, fechaPago, monto, anotaciones);
 
-    // Determinar si es histórica o vigente
-    Fecha salida = nueva->calcularFechaSalida();
-    if (salida < fechaCorte) {
-        // Es histórica
+    if (esHistorica) {
         if (cantidadReservasHistoricas == capacidadReservasHistoricas)
             redimensionarReservasHistoricas();
         listaReservasHistoricas[cantidadReservasHistoricas++] = nueva;
     } else {
-        // Es vigente
         if (cantidadReservasVigentes == capacidadReservasVigentes)
             redimensionarReservasVigentes();
         listaReservasVigentes[cantidadReservasVigentes++] = nueva;
     }
 
-    // Registrar la reserva en el alojamiento y el huésped
     aloj->agregarReservacion(fechaEntrada, duracion);
     huesp->agregarReserva(nueva);
-
     totalMemoria += sizeof(Reserva);
 
-    // Ajustar siguienteId si es necesario
-    int idNum = convertirEntero(cod + 4); // Salta "RSV-"
+    // Ajustar ID si aplica
+    int idNum = convertirEntero(cod + 4); // omite "RSV-"
     if (idNum >= Reserva::getSiguienteId()) {
         Reserva::setSiguienteId(idNum + 1);
     }
 
-    // Liberar memoria temporal
+    // Liberar campos temporales
     delete[] cod; delete[] fechaTexto; delete[] duracionTexto;
     delete[] codAloj; delete[] docHuesped; delete[] metodo;
     delete[] fechaPagoTexto; delete[] montoTexto; delete[] anotaciones;
@@ -1109,8 +1103,13 @@ void UdeAStay::mostrarReservasHuespedActivo() const {
         return;
     }
 
-    cout << "\n--- Reservas del huésped: " << huespedActivo->getNombreCompleto() << " ---\n";
-    huespedActivo->mostrarReservas(); // Esta función ya está implementada
+    cout << "\n--- Reservas VIGENTES del huésped: " << huespedActivo->getNombreCompleto() << " ---\n";
+
+    for (int i = 0; i < cantidadReservasVigentes; i++) {
+        if (listaReservasVigentes[i]->getHuesped() == huespedActivo) {
+            listaReservasVigentes[i]->mostrarComprobante();
+        }
+    }
 }
 
 

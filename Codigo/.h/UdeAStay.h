@@ -107,7 +107,7 @@ private:
 
     // Utilidad para reservas
     char* generarCodigoReserva();
-    void crearReservaDesdeTexto(const char* linea);
+    void crearReservaDesdeTexto(const char* linea, bool esHistorica);
 
 public:
     // SECCIÓN 7: CONSTRUCTOR Y DESTRUCTOR
