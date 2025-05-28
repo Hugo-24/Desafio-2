@@ -157,6 +157,7 @@ void Huesped::mostrarReservas() const {
 bool Huesped::verificaCruce(const Fecha& inicio, int duracion) const {
     Fecha finNueva = inicio + (duracion - 1);
     for (int i = 0; i < cantidadReservas; i++) {
+        totalIteracionesEnReservas++;
         Fecha entradaExistente = listaReservas[i]->getFechaEntrada();
         int duracionExistente = listaReservas[i]->getDuracion();
         Fecha finExistente = entradaExistente + (duracionExistente - 1);

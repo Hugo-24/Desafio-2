@@ -15,6 +15,7 @@ void Alojamiento::redimensionarReservas() {
     int* nuevasDuraciones = new int[nuevaCapacidad];
 
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         nuevasFechas[i] = fechasInicioReservadas[i];
         nuevasDuraciones[i] = duracionesReservadas[i];
     }
@@ -69,6 +70,7 @@ Alojamiento::Alojamiento(const Alojamiento& otro) {
     duracionesReservadas = new int[capacidadReservaciones];
 
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         fechasInicioReservadas[i] = otro.fechasInicioReservadas[i];
         duracionesReservadas[i] = otro.duracionesReservadas[i];
     }
@@ -149,6 +151,7 @@ void Alojamiento::agregarReservacion(const Fecha& inicio, int duracion) {
 // Eliminar reserva por inicio y duración (no por código)
 void Alojamiento::eliminarReservacion(const Fecha& inicio, int duracion) {
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         if (fechasInicioReservadas[i] == inicio && duracionesReservadas[i] == duracion) {
             for (int j = i; j < cantidadReservaciones - 1; j++) {
                 fechasInicioReservadas[j] = fechasInicioReservadas[j + 1];
@@ -158,7 +161,6 @@ void Alojamiento::eliminarReservacion(const Fecha& inicio, int duracion) {
             cantidadReservaciones--;
             return;
         }
-        totalIteracionesEnReservas++;
     }
 }
 

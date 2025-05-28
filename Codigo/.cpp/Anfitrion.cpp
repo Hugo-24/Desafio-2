@@ -45,6 +45,7 @@ Anfitrion::Anfitrion(const Anfitrion& otro) {
     listaAlojamientos = new Alojamiento*[capacidadAlojamientos];
 
     for (int i = 0; i < cantidadAlojamientos; i++) {
+        totalIteracionesEnAlojamientos++;
         listaAlojamientos[i] = otro.listaAlojamientos[i]; // Copia superficial
     }
 
