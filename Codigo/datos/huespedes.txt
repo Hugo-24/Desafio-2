@@ -1,0 +1,5 @@
+12345678;Juan Perez;12;4.7
+87654322;Laura Ruiz;6;5
+11998877;Felipe Gomez;24;4.3
+33445566;Camila Torres;8;4.1
+55667788;Luis Rodríguez;15;3.9

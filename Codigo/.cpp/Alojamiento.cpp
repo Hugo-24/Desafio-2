@@ -1,39 +1,12 @@
 #include "Alojamiento.h"
 #include "Anfitrion.h"
+#include "Funciones.h"
 #include <iostream>
-
 using namespace std;
 
 // Inicialización de contadores
 int Alojamiento::totalAlojamientosCreados = 0;
 int Alojamiento::totalIteracionesEnReservas = 0;
-
-// Función para calcular la longitud de un texto sin usar <cstring>
-int Alojamiento::longitudTexto(const char* texto) const {
-    int i = 0;
-    while (texto[i] != '\0') {
-        i++;
-    }
-    return i;
-}
-
-// Copia manual de texto (como strcpy pero hecho a mano)
-void Alojamiento::copiarTextoManual(char* destino, const char* fuente) const {
-    int i = 0;
-    while (fuente[i] != '\0') {
-        destino[i] = fuente[i];
-        i++;
-    }
-    destino[i] = '\0';
-}
-
-// Crea una nueva copia dinámica de un texto
-char* Alojamiento::copiarTexto(const char* texto) const {
-    int longitud = longitudTexto(texto);
-    char* copia = new char[longitud + 1];
-    copiarTextoManual(copia, texto);
-    return copia;
-}
 
 // Duplica el tamaño de los arreglos de reservas si se llenan
 void Alojamiento::redimensionarReservas() {
@@ -42,6 +15,7 @@ void Alojamiento::redimensionarReservas() {
     int* nuevasDuraciones = new int[nuevaCapacidad];
 
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         nuevasFechas[i] = fechasInicioReservadas[i];
         nuevasDuraciones[i] = duracionesReservadas[i];
     }
@@ -96,6 +70,7 @@ Alojamiento::Alojamiento(const Alojamiento& otro) {
     duracionesReservadas = new int[capacidadReservaciones];
 
     for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
         fechasInicioReservadas[i] = otro.fechasInicioReservadas[i];
         duracionesReservadas[i] = otro.duracionesReservadas[i];
     }
@@ -146,10 +121,19 @@ void Alojamiento::mostrarAmenidades() const {
 }
 
 // Verifica si hay una reserva con esa fecha exacta
-bool Alojamiento::estaDisponible(const Fecha& inicio) const {
+bool Alojamiento::estaDisponible(const Fecha& inicio, int duracion) const {
     for (int i = 0; i < cantidadReservaciones; i++) {
         totalIteracionesEnReservas++;
-        if (inicio == fechasInicioReservadas[i]) return false;
+        Fecha reservada = fechasInicioReservadas[i];
+        int dur = duracionesReservadas[i];
+
+        // Verifica cruce de fechas
+        Fecha finIntento = inicio + (duracion - 1);
+        Fecha finReservada = reservada + (dur - 1);
+
+        if (!(finIntento < reservada || finReservada < inicio)) {
+            return false; // hay cruce
+        }
     }
     return true;
 }
@@ -164,12 +148,23 @@ void Alojamiento::agregarReservacion(const Fecha& inicio, int duracion) {
     cantidadReservaciones++;
 }
 
-// Eliminar reserva (simulado)
-void Alojamiento::eliminarReservacion(const char* codigoReserva) {
-    cout << "Reserva con codigo " << codigoReserva << " eliminada del alojamiento " << nombre << " (simulado).\n";
+// Eliminar reserva por inicio y duración (no por código)
+void Alojamiento::eliminarReservacion(const Fecha& inicio, int duracion) {
+    for (int i = 0; i < cantidadReservaciones; i++) {
+        totalIteracionesEnReservas++;
+        if (fechasInicioReservadas[i] == inicio && duracionesReservadas[i] == duracion) {
+            for (int j = i; j < cantidadReservaciones - 1; j++) {
+                fechasInicioReservadas[j] = fechasInicioReservadas[j + 1];
+                duracionesReservadas[j] = duracionesReservadas[j + 1];
+                totalIteracionesEnReservas++;
+            }
+            cantidadReservaciones--;
+            return;
+        }
+    }
 }
 
-// Mostrar reservas en rango
+// Mostrar reservas entre dos fechas
 void Alojamiento::mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const {
     cout << "Reservas del alojamiento '" << nombre << "' entre ";
     cout << desde.getDia() << "/" << desde.getMes() << "/" << desde.getAnio();
@@ -187,12 +182,12 @@ void Alojamiento::mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta)
     }
 }
 
-// Devolver puntero al anfitrión dueño
+// Dueño del alojamiento
 Anfitrion* Alojamiento::getAnfitrionResponsable() const {
     return dueno;
 }
 
-// Getters de los contadores
+// Contadores de recursos
 int Alojamiento::getTotalAlojamientosCreados() {
     return totalAlojamientosCreados;
 }

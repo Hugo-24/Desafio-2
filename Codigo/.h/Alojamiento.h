@@ -32,9 +32,6 @@ private:
     Anfitrion* dueno;
 
     // Métodos internos
-    char* copiarTexto(const char* texto) const;
-    int longitudTexto(const char* texto) const;
-    void copiarTextoManual(char* destino, const char* fuente) const;
     void redimensionarReservas();  // Duplica capacidad si se llena el arreglo
 
     // Contadores estáticos para análisis de recursos
@@ -69,9 +66,9 @@ public:
     void mostrarAmenidades() const;
 
     // Gestión de reservas
-    bool estaDisponible(const Fecha& inicio) const;
+    bool estaDisponible(const Fecha& inicio, int duracion) const;
     void agregarReservacion(const Fecha& inicio, int duracion);
-    void eliminarReservacion(const char* codigoReserva); // Simulado
+    void eliminarReservacion(const Fecha& inicio, int duracion);
     void mostrarReservasEnRango(const Fecha& desde, const Fecha& hasta) const;
 
     // Dueño del alojamiento

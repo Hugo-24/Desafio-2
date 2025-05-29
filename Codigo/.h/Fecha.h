@@ -44,6 +44,9 @@ public:
     // IMPORTANTE: El puntero retornado debe ser liberado con delete[]
     char* toString() const;
 
+    // Retorna true si esta fecha se cruza con otra fecha durante cierta cantidad de noches
+    bool seCruzaCon(const Fecha& otra, int duracionOtra) const;
+
     // Operador de igualdad: compara si dos fechas son iguales
     bool operator==(const Fecha& otra) const;
 

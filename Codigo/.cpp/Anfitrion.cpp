@@ -1,37 +1,11 @@
 #include "Anfitrion.h"
 #include "Alojamiento.h"
+#include "Funciones.h"  // Usamos las funciones globales: copiarTexto, sonIguales, etc.
 
 // Inicialización de variables estáticas
 int Anfitrion::contadorAnfitriones = 0;
 int Anfitrion::totalAnfitrionesCreados = 0;
 int Anfitrion::totalIteracionesEnAlojamientos = 0;
-
-// Función auxiliar para calcular la longitud de un texto (como strlen)
-int Anfitrion::longitudTexto(const char* texto) const {
-    int len = 0;
-    while (texto[len] != '\0') {
-        len++;
-    }
-    return len;
-}
-
-// Función auxiliar para copiar texto de forma manual (sin usar strncpy)
-void Anfitrion::copiarTexto(char* destino, const char* fuente) const {
-    int i = 0;
-    while (fuente[i] != '\0') {
-        destino[i] = fuente[i];
-        i++;
-    }
-    destino[i] = '\0';
-}
-
-// Copia segura de texto dinámico
-char* Anfitrion::copiarTexto(const char* texto) const {
-    int longitud = longitudTexto(texto);
-    char* copia = new char[longitud + 1];
-    copiarTexto(copia, texto);
-    return copia;
-}
 
 // Constructor principal (genera código tipo ANF001 automáticamente)
 Anfitrion::Anfitrion(const char* nombre, int antiguedad) {
@@ -71,6 +45,7 @@ Anfitrion::Anfitrion(const Anfitrion& otro) {
     listaAlojamientos = new Alojamiento*[capacidadAlojamientos];
 
     for (int i = 0; i < cantidadAlojamientos; i++) {
+        totalIteracionesEnAlojamientos++;
         listaAlojamientos[i] = otro.listaAlojamientos[i]; // Copia superficial
     }
 
@@ -115,22 +90,15 @@ void Anfitrion::setPuntuacion(float nuevaPuntuacion) {
     puntuacion = nuevaPuntuacion;
 }
 
-// Esta función duplica el tamaño del arreglo de alojamientos cuando ya no hay más espacio.
-// Es necesaria porque usamos arreglos dinámicos sin STL, así que debemos manejar manualmente
-// el crecimiento de la estructura para seguir agregando alojamientos sin perder los anteriores.
-void Anfitrion::redimensionarAlojamientos() {
-    int nuevaCapacidad = capacidadAlojamientos * 2;
-    Alojamiento** nuevoArreglo = new Alojamiento*[nuevaCapacidad];
-
-    for (int i = 0; i < cantidadAlojamientos; i++) {
-        nuevoArreglo[i] = listaAlojamientos[i];
-    }
-
-    delete[] listaAlojamientos;
-    listaAlojamientos = nuevoArreglo;
-    capacidadAlojamientos = nuevaCapacidad;
+void Anfitrion::setDocumentoIdentidad(const char* documento) {
+    delete[] documentoIdentidad;
+    documentoIdentidad = copiarTexto(documento);
 }
 
+// Redimensionar alojamientos
+void Anfitrion::redimensionarAlojamientos() {
+    listaAlojamientos = redimensionarArreglo(listaAlojamientos, cantidadAlojamientos, capacidadAlojamientos);
+}
 // Agrega un nuevo alojamiento
 void Anfitrion::agregarAlojamiento(Alojamiento* alojamiento) {
     if (cantidadAlojamientos == capacidadAlojamientos) {
@@ -148,10 +116,10 @@ void Anfitrion::verReservaciones(const Fecha& desde, const Fecha& hasta) const {
 }
 
 // Anular reserva en todos sus alojamientos
-void Anfitrion::anularReservacion(const char* codigoReserva) {
+void Anfitrion::anularReservacion(const Fecha& inicio, int duracion) {
     for (int i = 0; i < cantidadAlojamientos; i++) {
         totalIteracionesEnAlojamientos++;
-        listaAlojamientos[i]->eliminarReservacion(codigoReserva);
+        listaAlojamientos[i]->eliminarReservacion(inicio, duracion);
     }
 }
 

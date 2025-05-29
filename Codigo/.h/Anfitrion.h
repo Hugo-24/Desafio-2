@@ -19,13 +19,7 @@ private:
     int cantidadAlojamientos;
     int capacidadAlojamientos;
 
-    // Cosas internas para manejo seguro
-    char* copiarTexto(const char* texto) const;
     void redimensionarAlojamientos();// Esta función duplica el tamaño del arreglo de alojamientos cuando ya no hay más espacio.
-
-    // Funciones auxiliares
-    int longitudTexto(const char* texto) const;
-    void copiarTexto(char* destino, const char* fuente) const;
 
     // Contador estático para generar códigos únicos tipo "ANF001"
     static int contadorAnfitriones;
@@ -55,6 +49,10 @@ public:
     void setNombreCompleto(const char* nombre);
     void setPuntuacion(float puntuacion);
 
+    //Este método se usa exclusivamente para la carga desde archivos. No debe usarse en la lógica normal del sistema.
+    // Permite establecer manualmente el documento del anfitrión.
+    void setDocumentoIdentidad(const char* documento);
+
     // Agrega un alojamiento nuevo al arreglo
     void agregarAlojamiento(Alojamiento* alojamiento);
 
@@ -62,7 +60,7 @@ public:
     void verReservaciones(const Fecha& desde, const Fecha& hasta) const;
 
     // Le pide a sus alojamientos que anulen alguna reserva
-    void anularReservacion(const char* codigoReserva);
+    void anularReservacion(const Fecha& inicio, int duracion);
 
     // Métodos para reportar uso de recursos
     static int getTotalAnfitrionesCreados();
