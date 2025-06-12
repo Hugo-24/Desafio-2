@@ -1,5 +1,10 @@
-12345678;Juan Perez;12;4.7
-87654322;Laura Ruiz;6;5
-11998877;Felipe Gomez;24;4.3
-33445566;Camila Torres;8;4.1
-55667788;Luis Rodríguez;15;3.9
+17654321;George Zerpa;12;4.9
+11111111;Laura Pineda;10;4.8
+22222222;Carlos Lopez;6;4.5
+33333333;Ana Torres;8;4.3
+44444444;Miguel Rivera;4;4.1
+55555555;Tatiana Duque;9;4.6
+66666666;Esteban Meza;7;4.4
+77777777;Luisa Gomez;3;4
+88888888;Pedro Rios;2;3.8
+99999999;Mariana Hoyos;5;4.2

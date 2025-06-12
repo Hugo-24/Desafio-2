@@ -1,8 +1,17 @@
-ALO-0001;Casa Medellin Centro;Antioquia;Medellin;Cra 50 #50-01;0;180000;11445566;wifi,piscina,cocina
-ALO-0002;Apartamento en El Poblado;Antioquia;Medellin;Calle 10 #35-22;1;120000;22889977;wifi,aire,parqueadero
-ALO-0003;Finca en Santa Fe;Antioquia;SantaFe;Via principal Km 4;0;95000;11445566;piscina,patio,cocina
-ALO-0004;Loft Laureles;Antioquia;Medellin;Calle 33 #70-55;1;135000;22889977;wifi,aire,caja
-ALO-0005;Cabaña Guatape Vista Lago;Antioquia;Guatape;Vereda El Penol;0;200000;11445566;piscina,parqueadero,patio,cocina
-ALO-0006;Estudio Sabaneta;Antioquia;Sabaneta;Calle 65 #45-12;1;85000;22889977;wifi,cocina
-ALO-0007;Apartamento Envigado;Antioquia;Envigado;Calle 45 #22-10;1;110000;33667788;wifi,aire,parqueadero
-ALO-0008;Casa Guarne;Antioquia;Guarne;Vereda La Ceja;0;90000;44558899;parqueadero,patio,cocina
+ALO-0001;Casa Campestre El Pinar;Antioquia;Medellin;Cra 12 #34-56;0;200000;11223344;wifi,cocina
+ALO-0002;Apartamento Moderno 3B;Antioquia;Medellin;Cll 76 #45-21;1;180000;22334455;wifi,parqueadero,cocina
+ALO-0003;Loft Industrial Centro;Antioquia;Medellin;Av Oriental #20-80;1;150000;33445566;aire,cocina
+ALO-0004;Casa Colonial Laureles;Antioquia;Medellin;Cll 35 #65-80;0;220000;44556677;piscina,patio
+ALO-0005;Apartamento Estadio Azul;Antioquia;Medellin;Cll 50 #70-20;1;160000;55667788;wifi,parqueadero
+ALO-0006;Penthouse en El Poblado;Antioquia;Medellin;Cll 7 #43-10;1;350000;12345678;piscina,cocina
+ALO-0007;Casa Jardin Botanico;Antioquia;Medellin;Cll 73 #52-40;0;210000;12345678;wifi,aire,caja
+ALO-0008;Apartamento Premium Sur;Antioquia;Medellin;Cra 45 #10-33;1;190000;12345678;wifi,parqueadero
+ALO-0009;Apartamento El Tesoro;Antioquia;Medellin;Cll 1 #33-99;1;175000;66778899;aire,cocina
+ALO-0010;Cabana Campestre;Antioquia;Rionegro;Vereda El Tablazo;0;130000;77889900;patio
+ALO-0011;Casa de Descanso Norte;Antioquia;Copacabana;Carrera 20 #16-50;0;120000;88990011;
+ALO-0012;Apartamento San Joaquin;Antioquia;Medellin;Cll 42 #65-10;1;165000;11223344;wifi,parqueadero
+ALO-0013;Estudio Minimalista;Antioquia;Medellin;Cra 55 #72-30;1;140000;11223344;cocina
+ALO-0014;Casa Familiar Prado;Antioquia;Medellin;Cll 59 #49-88;0;200000;22334455;piscina,patio,cocina
+ALO-0015;Loft Vista Panoramica;Antioquia;Medellin;Cll 90 #80-21;1;185000;33445566;wifi,aire
+ALO-0016;Apartamento San Diego;Antioquia;Medellin;Cra 43 #32-15;1;195000;44556677;wifi,parqueadero
+ALO-0017;Casa Estilo Colonial;Antioquia;Medellin;Cra 10 #25-18;0;205000;55667788;aire,cocina

@@ -1,4 +1,9 @@
-11445566;Carlos Mejia;20;4.5
-22889977;Maria Camacho;12;4.8
-33667788;Juanita Marín;18;4.2
-44558899;Andrés Vélez;30;4.9
+11223344;Ricardo Calle;18;4.5
+22334455;Valeria Montoya;14;4.3
+33445566;Andres Cano;20;4.6
+44556677;Juliana Perez;16;4.4
+12345678;Juanita Rodriguez;24;4.7
+55667788;Camilo Herrera;8;4.1
+66778899;Santiago Leon;10;4.2
+77889900;Marcela Velez;12;4.3
+88990011;Luis Miguel Rojas;6;4
